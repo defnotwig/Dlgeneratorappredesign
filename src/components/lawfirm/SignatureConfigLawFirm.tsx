@@ -20,7 +20,7 @@ export function SignatureConfigLawFirm() {
   const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>([
     {
       id: 1,
-      signaturePreview: 'data:image/png;base64,...', // Mock data
+      signaturePreview: 'https://via.placeholder.com/200x80/003B5C/D4AF37?text=Signature+Sample',
       requestedDate: 'Jan 12, 2026 10:30 AM',
       requestedBy: 'Pangasinan, Francisco G.',
       status: 'Approved',
@@ -255,7 +255,7 @@ export function SignatureConfigLawFirm() {
             <div className="bg-blue-50 border border-blue-300 rounded-lg p-4">
               <h4 className="font-semibold text-blue-900 mb-2 text-sm">Requirements:</h4>
               <ul className="text-xs text-blue-800 space-y-1 ml-4 list-disc">
-                <li>PNG format with transparent background</li>
+                <li>PNG, JPG, or SVG format with transparent background</li>
                 <li>Actual handwritten signature (scanned)</li>
                 <li>High resolution (minimum 300 DPI)</li>
                 <li>Clean, professional appearance</li>
@@ -267,7 +267,7 @@ export function SignatureConfigLawFirm() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".png"
+                  accept=".png,.jpg,.jpeg,.svg"
                   onChange={handleFileSelect}
                   className="hidden"
                 />
@@ -277,15 +277,17 @@ export function SignatureConfigLawFirm() {
                 >
                   <Upload size={40} className="text-gray-400 mx-auto mb-3" />
                   <p className="text-sm text-gray-600 font-medium">Click to upload signature</p>
-                  <p className="text-xs text-gray-500 mt-1">PNG files only</p>
+                  <p className="text-xs text-gray-500 mt-1">PNG, JPG, or SVG files</p>
                 </div>
               </label>
             ) : (
               <div className="border-2 border-[#D4AF37] bg-amber-50 rounded-lg p-6">
                 <div className="bg-white rounded-lg p-4 mb-4">
-                  <div className="h-32 flex items-center justify-center">
-                    <span className="text-sm text-gray-500 italic">Signature Preview</span>
-                  </div>
+                  <img 
+                    src={signaturePreview} 
+                    alt="Signature Preview" 
+                    className="h-32 mx-auto object-contain"
+                  />
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -408,15 +410,21 @@ export function SignatureConfigLawFirm() {
               Date is automatically generated with handwritten-style font and slight randomization
             </p>
             <div className="bg-white rounded-lg p-6 border-2 border-dashed border-gray-300">
-              <div className="h-16 mb-3 flex items-center justify-center bg-gray-100 rounded">
-                <span className="text-xs text-gray-500">Approved Signature</span>
+              <div className="flex flex-col items-center">
+                <div className="h-20 mb-2 flex items-center justify-center">
+                  <img 
+                    src={activeSignature?.signaturePreview || 'https://via.placeholder.com/200x80/003B5C/D4AF37?text=Signature'} 
+                    alt="Signature" 
+                    className="h-16 object-contain"
+                  />
+                </div>
+                <p className="font-['Caveat'] text-2xl text-gray-900 text-center" style={{ transform: 'rotate(-1deg)' }}>
+                  January 14, 2026
+                </p>
               </div>
-              <p className="font-['Caveat'] text-2xl text-gray-900" style={{ transform: 'rotate(-1deg)' }}>
-                January 14, 2026
-              </p>
             </div>
             <p className="text-xs text-gray-500 mt-3 text-center">
-              Font: Handwritten style • Rotation: ±2° • Spacing: Randomized
+              Date appears centered at bottom • Font: Handwritten style • Rotation: ±2° • Spacing: Randomized
             </p>
           </div>
         </div>
