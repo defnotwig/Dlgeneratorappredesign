@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, type ComponentType, type SVGProps } from 'react';
 import { Menu, X, LogOut, User } from 'lucide-react';
-import logoSPM from 'figma:asset/71326ea767111577d27374f8f8da385be3b5fe2c.png';
+import logoSPM from '/src/assets/SPM Madrid logo.png?url';
 
 interface MenuItem {
   id: string;
   label: string;
-  icon: any;
+  icon: ComponentType<any>;
   adminOnly?: boolean;
 }
 
@@ -106,7 +106,7 @@ export function NavigationLawFirm({
               <label className="text-xs text-gray-600 block mb-1 font-medium">Demo Role:</label>
               <select
                 value={userRole}
-                onChange={(e) => setUserRole(e.target.value as any)}
+                onChange={(e) => setUserRole(e.target.value as NavigationProps['userRole'])}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37] bg-white text-gray-700"
               >
                 <option value="admin">Admin</option>

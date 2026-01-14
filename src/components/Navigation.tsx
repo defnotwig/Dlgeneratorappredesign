@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, type ComponentType } from 'react';
 import { Menu, X, LogOut, User } from 'lucide-react';
-import logoSPM from 'figma:asset/71326ea767111577d27374f8f8da385be3b5fe2c.png';
+import logoSPM from '/src/assets/SPM Madrid logo.png?url';
 
 interface MenuItem {
   id: string;
   label: string;
-  icon: any;
+  icon: ComponentType<any>;
   adminOnly?: boolean;
 }
 
