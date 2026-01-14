@@ -165,7 +165,6 @@ export function SignatureConfig() {
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Validity</th>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Response</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -210,26 +209,9 @@ export function SignatureConfig() {
                           <p className="text-xs text-gray-600">by {request.respondedBy}</p>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-500 italic">Waiting...</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      {request.status === 'Pending' && (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => simulateApproval(request.id, true)}
-                            className="px-3 py-1 bg-emerald-600 text-white rounded text-xs font-semibold hover:bg-emerald-700 transition-colors"
-                            title="Simulate Lark ALLOW"
-                          >
-                            ✓ Allow
-                          </button>
-                          <button
-                            onClick={() => simulateApproval(request.id, false)}
-                            className="px-3 py-1 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700 transition-colors"
-                            title="Simulate Lark REJECT"
-                          >
-                            ✗ Reject
-                          </button>
+                        <div>
+                          <span className="text-sm text-amber-700 italic font-medium">Pending in Lark App</span>
+                          <p className="text-xs text-gray-500 mt-1">Attorney will ALLOW/REJECT</p>
                         </div>
                       )}
                     </td>
@@ -280,7 +262,7 @@ export function SignatureConfig() {
               </label>
             ) : (
               <div className="border-2 border-emerald-500 bg-emerald-50 rounded-lg p-6">
-                <div className="bg-white rounded-lg p-4 mb-4">
+                <div className="bg-white rounded-lg p-4 mb-4 pointer-events-none">
                   <img 
                     src={signaturePreview} 
                     alt="Signature Preview" 
@@ -324,9 +306,13 @@ export function SignatureConfig() {
               </label>
               <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                 <option>Indefinite (until replaced)</option>
+                <option>1 Week</option>
+                <option>2 Weeks</option>
+                <option>3 Weeks</option>
                 <option>1 Month</option>
                 <option>3 Months</option>
                 <option>6 Months</option>
+                <option>9 Months</option>
                 <option>1 Year</option>
               </select>
             </div>
