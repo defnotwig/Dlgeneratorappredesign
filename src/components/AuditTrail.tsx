@@ -1,5 +1,6 @@
 import { Clock, FileText, User, Filter, Download, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { PaginationControl } from './ui/PaginationControl';
 
 interface AuditLog {
   id: number;
@@ -13,12 +14,16 @@ interface AuditLog {
 export function AuditTrail() {
   const [filterAction, setFilterAction] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const auditLogs: AuditLog[] = [
     {
       id: 1,
       timestamp: 'Jan 14, 2026 09:45 AM',
-      user: 'Pangasinan, Francisco G.',
+      user: 'Rivera, Gabriel Ludwig R.',
       action: 'DL Generated',
       details: 'Template: Payment Demand | Client: John Doe',
       status: 'success',
@@ -34,7 +39,7 @@ export function AuditTrail() {
     {
       id: 3,
       timestamp: 'Jan 14, 2026 09:15 AM',
-      user: 'Pangasinan, Francisco G.',
+      user: 'Rivera, Gabriel Ludwig R.',
       action: 'Signature Request',
       details: 'Requested signature approval via Lark Bot',
       status: 'warning',
@@ -50,7 +55,7 @@ export function AuditTrail() {
     {
       id: 5,
       timestamp: 'Jan 13, 2026 02:10 PM',
-      user: 'Pangasinan, Francisco G.',
+      user: 'Rivera, Gabriel Ludwig R.',
       action: 'DL Generated',
       details: 'Template: Final Notice | Client: Jane Smith',
       status: 'success',
@@ -63,6 +68,12 @@ export function AuditTrail() {
                           log.details.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+  
+  // Calculate paginated logs
+  const paginatedLogs = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredLogs.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredLogs, currentPage, itemsPerPage]);
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -137,7 +148,7 @@ export function AuditTrail() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredLogs.map((log) => (
+              {paginatedLogs.map((log) => (
                 <tr key={log.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                     {log.timestamp}
@@ -172,6 +183,22 @@ export function AuditTrail() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Control */}
+        {filteredLogs.length > 0 && (
+          <div className="p-4 border-t border-gray-200">
+            <PaginationControl
+              currentPage={currentPage}
+              totalItems={filteredLogs.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={(newSize) => {
+                setItemsPerPage(newSize);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+        )}
 
         {filteredLogs.length === 0 && (
           <div className="p-12 text-center">

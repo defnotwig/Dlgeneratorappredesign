@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProcessModeSelector } from './ProcessModeSelector';
 import { OutputFormatSelector } from './OutputFormatSelector';
 import { ClientSelector } from './ClientSelector';
@@ -6,13 +6,56 @@ import { FileUploader } from './FileUploader';
 import { GenerationSummary } from './GenerationSummary';
 import { Download, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
+interface ActiveSignature {
+  id: number;
+  file_path: string;
+  file_name?: string;
+  status: string;
+  approved_at?: string;
+  validity_period?: string;
+}
+
 export function Dashboard() {
   const [processMode, setProcessMode] = useState<'dl-only' | 'dl-transmittal' | 'transmittal-only'>('dl-only');
   const [outputFormat, setOutputFormat] = useState<'zip' | 'print'>('zip');
   const [selectedClient, setSelectedClient] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [hasApprovedSignature] = useState(true);
+  const [hasApprovedSignature, setHasApprovedSignature] = useState(false);
+  const [activeSignature, setActiveSignature] = useState<ActiveSignature | null>(null);
+
+  // Fetch actual signature status from backend using the dedicated active signature endpoint
+  useEffect(() => {
+    const checkSignatureStatus = async () => {
+      try {
+        // Use the dedicated endpoint that returns the active (approved) signature
+        const response = await fetch('http://localhost:8000/api/signatures/status/active');
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.status === 'Approved') {
+            setHasApprovedSignature(true);
+            setActiveSignature(data);
+          } else {
+            setHasApprovedSignature(false);
+            setActiveSignature(null);
+          }
+        } else {
+          setHasApprovedSignature(false);
+          setActiveSignature(null);
+        }
+      } catch (err) {
+        console.log('Failed to check signature status:', err);
+        setHasApprovedSignature(false);
+        setActiveSignature(null);
+      }
+    };
+    
+    checkSignatureStatus();
+    // Poll every 3 seconds to catch real-time updates
+    const interval = setInterval(checkSignatureStatus, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
 
   const handleGenerate = () => {
     if (!hasApprovedSignature) {

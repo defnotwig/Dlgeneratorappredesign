@@ -93,7 +93,7 @@ export function Navigation({
               </div>
               <div className="flex-1">
                 <p className="font-medium text-sm text-gray-900">
-                  Pangasinan, Francisco G.
+                  Rivera, Gabriel Ludwig R.
                 </p>
                 <p className="text-xs text-gray-500 capitalize">{userRole}</p>
               </div>

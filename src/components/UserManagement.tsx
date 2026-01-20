@@ -1,18 +1,23 @@
 import { useState, useMemo } from 'react';
 import { Users, UserPlus, Search, Shield, Trash2, Edit } from 'lucide-react';
+import { PaginationControl } from './ui/PaginationControl';
 
 export function UserManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAccessLevel, setSelectedAccessLevel] = useState('all');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const users = [
     {
       id: 1,
-      email: 'pangasinan@demand.com',
-      name: 'Pangasinan, Francisco G.',
+      email: 'grivera@spmadridlaw.com',
+      name: 'Rivera, Gabriel Ludwig R.',
       accessLevel: 'Administrator',
       clients: ['BPI', 'EON BANK', 'USB PLC', 'BPI BANKO', 'CITIBANK', 'HSBC'],
-      branch: 'Pangasinan',
+      branch: 'PITX',
       status: 'Active',
     },
     {
@@ -46,6 +51,12 @@ export function UserManagement() {
       return matchesSearch && matchesAccess;
     });
   }, [searchTerm, selectedAccessLevel]);
+  
+  // Calculate paginated users
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredUsers.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredUsers, currentPage, itemsPerPage]);
 
   const stats = [
     { label: 'Total Users', value: users.length, color: 'bg-blue-500' },
@@ -153,7 +164,7 @@ export function UserManagement() {
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((user) => (
+                paginatedUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -213,6 +224,20 @@ export function UserManagement() {
               )}
             </tbody>
           </table>
+        </div>
+        
+        {/* Pagination Control */}
+        <div className="p-4 border-t border-gray-200">
+          <PaginationControl
+            currentPage={currentPage}
+            totalItems={filteredUsers.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(newSize) => {
+              setItemsPerPage(newSize);
+              setCurrentPage(1);
+            }}
+          />
         </div>
       </div>
     </div>

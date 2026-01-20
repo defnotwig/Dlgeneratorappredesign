@@ -95,7 +95,7 @@ export function NavigationLawFirm({
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-sm text-[#003B5C]">
-                  Pangasinan, Francisco G.
+                  Rivera, Gabriel Ludwig R.
                 </p>
                 <p className="text-xs text-gray-600 capitalize">{userRole}</p>
               </div>

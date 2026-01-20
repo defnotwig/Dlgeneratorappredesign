@@ -1,0 +1,248 @@
+{
+  "datefont": {
+    "root": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont",
+    "count": 11,
+    "errors": 0,
+    "widths": {
+      "min": 9.0,
+      "max": 33.0,
+      "mean": 18.545454025268555,
+      "std": 6.9329729080200195
+    },
+    "heights": {
+      "min": 11.0,
+      "max": 32.0,
+      "mean": 21.18181800842285,
+      "std": 4.969327449798584
+    },
+    "aspect_ratio": {
+      "min": 0.5625,
+      "max": 1.3809523582458496,
+      "mean": 0.8643750548362732,
+      "std": 0.2081165611743927
+    },
+    "mean": {
+      "min": 0.800000011920929,
+      "max": 48.64411163330078,
+      "mean": 26.7938175201416,
+      "std": 13.68693733215332
+    },
+    "variance": {
+      "min": 5.232728004455566,
+      "max": 3214.93115234375,
+      "mean": 1944.186767578125,
+      "std": 998.4500122070312
+    },
+    "alpha_usage": {
+      "min": 0.4912280738353729,
+      "max": 0.9818181991577148,
+      "mean": 0.7308120727539062,
+      "std": 0.1296377032995224
+    },
+    "files": [
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\0.png",
+        "mode": "RGBA",
+        "width": 12,
+        "height": 19,
+        "aspect_ratio": 0.631578947368421,
+        "mean": 2.1842105388641357,
+        "var": 15.457294464111328,
+        "alpha_usage": 0.8903508771929824
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\1.PNG",
+        "mode": "RGBA",
+        "width": 9,
+        "height": 16,
+        "aspect_ratio": 0.5625,
+        "mean": 32.88194274902344,
+        "var": 1815.5487060546875,
+        "alpha_usage": 0.7847222222222222
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\2.PNG",
+        "mode": "RGBA",
+        "width": 19,
+        "height": 23,
+        "aspect_ratio": 0.8260869565217391,
+        "mean": 28.5675048828125,
+        "var": 2255.064453125,
+        "alpha_usage": 0.7620137299771167
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\3.PNG",
+        "mode": "RGBA",
+        "width": 19,
+        "height": 24,
+        "aspect_ratio": 0.7916666666666666,
+        "mean": 27.74342155456543,
+        "var": 2329.62060546875,
+        "alpha_usage": 0.7017543859649122
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\4.PNG",
+        "mode": "RGBA",
+        "width": 33,
+        "height": 32,
+        "aspect_ratio": 1.03125,
+        "mean": 26.516098022460938,
+        "var": 2036.3311767578125,
+        "alpha_usage": 0.7528409090909091
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\5.PNG",
+        "mode": "RGBA",
+        "width": 29,
+        "height": 21,
+        "aspect_ratio": 1.380952380952381,
+        "mean": 22.34646987915039,
+        "var": 1955.14599609375,
+        "alpha_usage": 0.729064039408867
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\6.PNG",
+        "mode": "RGBA",
+        "width": 18,
+        "height": 21,
+        "aspect_ratio": 0.8571428571428571,
+        "mean": 31.60846519470215,
+        "var": 2101.1640625,
+        "alpha_usage": 0.7195767195767195
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\7.PNG",
+        "mode": "RGBA",
+        "width": 17,
+        "height": 24,
+        "aspect_ratio": 0.7083333333333334,
+        "mean": 33.5024528503418,
+        "var": 2904.882080078125,
+        "alpha_usage": 0.6666666666666666
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\8.PNG",
+        "mode": "RGBA",
+        "width": 19,
+        "height": 21,
+        "aspect_ratio": 0.9047619047619048,
+        "mean": 39.93734359741211,
+        "var": 2752.675537109375,
+        "alpha_usage": 0.5588972431077694
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\9.PNG",
+        "mode": "RGBA",
+        "width": 19,
+        "height": 21,
+        "aspect_ratio": 0.9047619047619048,
+        "mean": 48.64411163330078,
+        "var": 3214.93115234375,
+        "alpha_usage": 0.49122807017543857
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\datefont\\dot.png",
+        "mode": "RGBA",
+        "width": 10,
+        "height": 11,
+        "aspect_ratio": 0.9090909090909091,
+        "mean": 0.800000011920929,
+        "var": 5.232728004455566,
+        "alpha_usage": 0.9818181818181818
+      }
+    ]
+  },
+  "dated_signatures": {
+    "root": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\dated_signatures",
+    "count": 5,
+    "errors": 0,
+    "widths": {
+      "min": 411.0,
+      "max": 411.0,
+      "mean": 411.0,
+      "std": 0.0
+    },
+    "heights": {
+      "min": 186.0,
+      "max": 186.0,
+      "mean": 186.0,
+      "std": 0.0
+    },
+    "aspect_ratio": {
+      "min": 2.2096774578094482,
+      "max": 2.2096774578094482,
+      "mean": 2.2096774578094482,
+      "std": 0.0
+    },
+    "mean": {
+      "min": 1.805182695388794,
+      "max": 1.9770948886871338,
+      "mean": 1.8798656463623047,
+      "std": 0.06359653174877167
+    },
+    "variance": {
+      "min": 150.39060974121094,
+      "max": 166.38339233398438,
+      "mean": 157.12857055664062,
+      "std": 5.8418755531311035
+    },
+    "alpha_usage": {
+      "min": 0.9207414388656616,
+      "max": 0.9265363812446594,
+      "mean": 0.9240484237670898,
+      "std": 0.0020698856096714735
+    },
+    "files": [
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\dated_signatures\\signature_friday_1_16_26.png",
+        "mode": "RGBA",
+        "width": 411,
+        "height": 186,
+        "aspect_ratio": 2.2096774193548385,
+        "mean": 1.8729822635650635,
+        "var": 153.47479248046875,
+        "alpha_usage": 0.9265363786202025
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\dated_signatures\\signature_monday_1_12_26.png",
+        "mode": "RGBA",
+        "width": 411,
+        "height": 186,
+        "aspect_ratio": 2.2096774193548385,
+        "mean": 1.805182695388794,
+        "var": 150.39060974121094,
+        "alpha_usage": 0.9252413468330586
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\dated_signatures\\signature_thursday_1_15_26.png",
+        "mode": "RGBA",
+        "width": 411,
+        "height": 186,
+        "aspect_ratio": 2.2096774193548385,
+        "mean": 1.9770948886871338,
+        "var": 166.38339233398438,
+        "alpha_usage": 0.9226774455170971
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\dated_signatures\\signature_tuesday_1_13_26.png",
+        "mode": "RGBA",
+        "width": 411,
+        "height": 186,
+        "aspect_ratio": 2.2096774193548385,
+        "mean": 1.8219265937805176,
+        "var": 154.1200408935547,
+        "alpha_usage": 0.9250451298956126
+      },
+      {
+        "path": "C:\\Users\\Ludwig Rivera\\Downloads\\Dl Gen\\Dlgeneratorappredesign\\sign\\dated_signatures\\signature_wednesday_1_14_26.png",
+        "mode": "RGBA",
+        "width": 411,
+        "height": 186,
+        "aspect_ratio": 2.2096774193548385,
+        "mean": 1.9221410751342773,
+        "var": 161.2739715576172,
+        "alpha_usage": 0.9207414384009628
+      }
+    ]
+  }
+}

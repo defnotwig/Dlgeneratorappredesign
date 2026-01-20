@@ -1,0 +1,207 @@
+2026-01-19 16:33:43 [INFO] Running step: scan_datasets
+2026-01-19 16:33:43 [INFO] Step scan_datasets finished in 0.22s
+2026-01-19 16:33:43 [INFO] Running step: preprocess
+2026-01-19 16:33:43 [INFO] Step preprocess finished in 0.42s
+2026-01-19 16:33:43 [INFO] Running step: generate_dates
+2026-01-19 16:33:46 [INFO] Step generate_dates finished in 2.56s
+2026-01-19 16:33:46 [INFO] Running step: metrics_style
+2026-01-19 16:34:47 [INFO] Step metrics_style finished in 61.31s
+2026-01-19 16:34:47 [INFO] metrics_style stdout:
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\lpips\weights\v0.1\alex.pth
+
+2026-01-19 16:34:47 [INFO] metrics_style stderr:
+C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\torchvision\models\_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+C:\Users\Ludwig Rivera\AppData\Roaming\Python\Python313\site-packages\torchvision\models\_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+
+2026-01-19 16:34:47 [INFO] Running step: metrics_diversity
+2026-01-19 16:34:49 [INFO] Step metrics_diversity finished in 1.40s
+2026-01-19 16:34:49 [INFO] Running step: metrics_ocr
+2026-01-19 16:34:49 [INFO] Step metrics_ocr finished in 0.84s
+2026-01-19 16:34:49 [INFO] Running step: metrics_layout
+2026-01-19 16:34:50 [INFO] Step metrics_layout finished in 0.82s
+2026-01-19 16:34:50 [INFO] Running step: metrics_artifacts
+2026-01-19 16:34:51 [INFO] Step metrics_artifacts finished in 0.97s
+2026-01-19 16:34:51 [INFO] Running step: report_builder
+2026-01-19 16:34:52 [INFO] Step report_builder finished in 0.41s
+2026-01-19 16:34:52 [INFO] Generation throughput: 35.22 images/sec

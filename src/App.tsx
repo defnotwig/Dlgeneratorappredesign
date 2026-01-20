@@ -1,9 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppModern from './AppModern';
 import AppLawFirm from './AppLawFirm';
 
 export default function App() {
-  const [theme, setTheme] = useState<'modern' | 'lawfirm'>('lawfirm');
+  // Persist theme in sessionStorage so it survives page reloads
+  const [theme, setTheme] = useState<'modern' | 'lawfirm'>(() => {
+    const saved = sessionStorage.getItem('dlgen_theme');
+    return (saved as 'modern' | 'lawfirm') || 'lawfirm';
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('dlgen_theme', theme);
+  }, [theme]);
+
 
   return (
     <div>

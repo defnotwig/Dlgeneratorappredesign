@@ -1,0 +1,86 @@
+{
+  "layout_feature_order": [
+    "left_margin",
+    "right_margin",
+    "top_margin",
+    "bottom_margin",
+    "baseline_ratio",
+    "height_ratio",
+    "width_ratio",
+    "stroke_thickness"
+  ],
+  "layout_mean": [
+    0.03125,
+    0.0,
+    0.518750011920929,
+    0.0,
+    0.7281249761581421,
+    0.48124998807907104,
+    0.96875,
+    12.800000190734863
+  ],
+  "layout_std": [
+    0.0,
+    0.0,
+    0.09395810216665268,
+    0.0,
+    0.09301798045635223,
+    0.09395810216665268,
+    0.0,
+    0.4000000059604645
+  ],
+  "layout_rows": [
+    {
+      "left_margin": 0.03125,
+      "right_margin": 0.0,
+      "top_margin": 0.640625,
+      "bottom_margin": 0.0,
+      "baseline_ratio": 0.8515625,
+      "height_ratio": 0.359375,
+      "width_ratio": 0.96875,
+      "stroke_thickness": 13.0
+    },
+    {
+      "left_margin": 0.03125,
+      "right_margin": 0.0,
+      "top_margin": 0.578125,
+      "bottom_margin": 0.0,
+      "baseline_ratio": 0.78125,
+      "height_ratio": 0.421875,
+      "width_ratio": 0.96875,
+      "stroke_thickness": 13.0
+    },
+    {
+      "left_margin": 0.03125,
+      "right_margin": 0.0,
+      "top_margin": 0.5,
+      "bottom_margin": 0.0,
+      "baseline_ratio": 0.7109375,
+      "height_ratio": 0.5,
+      "width_ratio": 0.96875,
+      "stroke_thickness": 13.0
+    },
+    {
+      "left_margin": 0.03125,
+      "right_margin": 0.0,
+      "top_margin": 0.515625,
+      "bottom_margin": 0.0,
+      "baseline_ratio": 0.7265625,
+      "height_ratio": 0.484375,
+      "width_ratio": 0.96875,
+      "stroke_thickness": 13.0
+    },
+    {
+      "left_margin": 0.03125,
+      "right_margin": 0.0,
+      "top_margin": 0.359375,
+      "bottom_margin": 0.0,
+      "baseline_ratio": 0.5703125,
+      "height_ratio": 0.640625,
+      "width_ratio": 0.96875,
+      "stroke_thickness": 12.0
+    }
+  ],
+  "embedding_count": 5,
+  "style_distance_p95": 18.45903778076172
+}

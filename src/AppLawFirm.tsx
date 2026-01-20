@@ -9,9 +9,18 @@ import { NavigationLawFirm } from './components/lawfirm/NavigationLawFirm';
 import { FileText, Users, PenTool, FileType, Clock } from 'lucide-react';
 
 export default function AppLawFirm() {
-  const [activeView, setActiveView] = useState('dashboard');
+  // Persist activeView in sessionStorage so it survives page reloads
+  const [activeView, setActiveView] = useState(() => {
+    const saved = sessionStorage.getItem('dlgen_lawfirm_activeView');
+    return saved || 'dashboard';
+  });
   const [isMobile, setIsMobile] = useState(false);
   const [userRole, setUserRole] = useState<'admin' | 'user'>('admin');
+
+  // Persist activeView to sessionStorage when it changes
+  useEffect(() => {
+    sessionStorage.setItem('dlgen_lawfirm_activeView', activeView);
+  }, [activeView]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -21,6 +30,7 @@ export default function AppLawFirm() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
 
   const menuItems = [
     { id: 'dashboard', label: 'DL Generator', icon: FileText },

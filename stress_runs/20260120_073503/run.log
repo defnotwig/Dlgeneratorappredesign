@@ -1,0 +1,30 @@
+2026-01-20 07:35:05 [INFO] Running step: scan_datasets
+2026-01-20 07:35:05 [INFO] Step scan_datasets finished in 0.34s
+2026-01-20 07:35:05 [INFO] Running step: preprocess
+2026-01-20 07:35:05 [INFO] Step preprocess finished in 0.44s
+2026-01-20 07:35:05 [INFO] Running step: generate_dates
+2026-01-20 07:35:08 [INFO] Step generate_dates finished in 2.92s
+2026-01-20 07:35:08 [INFO] generate_dates stderr:
+Traceback (most recent call last):
+  File "C:\Users\Ludwig Rivera\Downloads\Dl Gen\Dlgeneratorappredesign\tools\generate_dates.py", line 259, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Ludwig Rivera\Downloads\Dl Gen\Dlgeneratorappredesign\tools\generate_dates.py", line 240, in main
+    result = asyncio.run(generate_images(run_dir, config, args.tier, start_date))
+  File "C:\Python313\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Python313\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Python313\Lib\asyncio\base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "C:\Users\Ludwig Rivera\Downloads\Dl Gen\Dlgeneratorappredesign\tools\generate_dates.py", line 193, in generate_images
+    img = _resolve_image_from_output(gen_out)
+  File "C:\Users\Ludwig Rivera\Downloads\Dl Gen\Dlgeneratorappredesign\tools\generate_dates.py", line 215, in _resolve_image_from_output
+    return Image.open(BytesIO(output["image_bytes"])).convert("RGBA")
+                      ^^^^^^^
+UnboundLocalError: cannot access local variable 'BytesIO' where it is not associated with a value
+
+2026-01-20 07:35:08 [ERROR] Stress test failed: Step generate_dates failed with code 1
