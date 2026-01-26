@@ -23,7 +23,7 @@ from fastapi.responses import JSONResponse
 sys.path.insert(0, str(Path(__file__).parent))
 
 from app.database import init_db, close_db
-from app.routers import signatures, users, audit, lark_bot, handwriting, templates, dl_generator
+from app.routers import signatures, users, audit, lark_bot, handwriting, templates, dl_generator, previews
 from app.services.handwriting_gan import HandwritingGAN
 
 # Create required directories
@@ -32,6 +32,7 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 (UPLOAD_DIR / "signatures").mkdir(exist_ok=True)
 (UPLOAD_DIR / "generated").mkdir(exist_ok=True)
 (UPLOAD_DIR / "templates").mkdir(exist_ok=True)
+(UPLOAD_DIR / "lark_previews").mkdir(exist_ok=True)
 
 # Global model instance
 handwriting_model = None
@@ -60,6 +61,14 @@ async def lifespan(app: FastAPI):
 
     # Store model in app state
     app.state.handwriting_model = handwriting_model
+
+    # Clear Lark preview cache on startup (ensures fresh images)
+    try:
+        from app.services.lark_preview_cache import clear_all_preview_cache
+        clear_all_preview_cache()
+        print("[OK] Lark preview cache cleared")
+    except Exception as e:
+        print(f"[WARN] Preview cache clear failed: {e}")
 
     # Start auto-approval scheduler
     try:
@@ -103,9 +112,14 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
         "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3002"
     ],
+    allow_origin_regex=r"^http://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -127,6 +141,7 @@ app.include_router(lark_bot, prefix="/api/lark", tags=["Lark Bot"])
 app.include_router(handwriting, prefix="/api/handwriting", tags=["Handwriting Generator"])
 app.include_router(templates, prefix="/api/templates", tags=["Templates"])
 app.include_router(dl_generator, prefix="/api/dl-generator", tags=["DL Generator"])
+app.include_router(previews, prefix="/api/previews", tags=["Preview Storage"])
 
 
 @app.get("/api/health")
