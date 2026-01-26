@@ -21,6 +21,7 @@ interface CustomDateRendererProps {
   className?: string;
   rotation?: number; // Slight rotation in degrees for handwritten effect
   height?: number; // Height in pixels for digit images
+  dotScale?: number; // Scale factor for dot height relative to digits
 }
 
 /**
@@ -33,7 +34,8 @@ export function CustomDateRenderer({
   date = new Date(), 
   className = '',
   rotation = -1,
-  height = 24
+  height = 24,
+  dotScale = 0.55
 }: CustomDateRendererProps) {
   // Format date as M.D.YY
   const formattedDate = useMemo(() => {
@@ -48,6 +50,7 @@ export function CustomDateRenderer({
 
   // Random slight variations for more natural handwritten feel
   const getRandomOffset = () => (Math.random() - 0.5) * 2;
+  const clampedDotScale = Math.max(0.3, Math.min(1, dotScale));
 
   return (
     <div 
@@ -58,6 +61,10 @@ export function CustomDateRenderer({
     >
       {characters.map((char, index) => {
         const imageSrc = DIGIT_IMAGES[char];
+        const isDot = char === '.';
+        const scaledHeight = isDot ? height * clampedDotScale : height;
+        const dotOffset = isDot ? height * 0.45 : 0;
+        const jitter = isDot ? 0 : getRandomOffset();
         
         if (!imageSrc) {
           // Skip unknown characters
@@ -70,12 +77,12 @@ export function CustomDateRenderer({
             src={imageSrc}
             alt={char}
             style={{
-              height: `${height}px`,
+              height: `${scaledHeight}px`,
               width: 'auto',
-              marginTop: `${getRandomOffset()}px`,
-              marginRight: char === '.' ? '0px' : '1px',
+              marginTop: `${jitter + dotOffset}px`,
+              marginRight: isDot ? '0px' : '1px',
               // Slight random rotation for each character for authenticity
-              transform: `rotate(${getRandomOffset() * 0.5}deg)`,
+              transform: `rotate(${jitter * 0.5}deg)`,
             }}
             className="inline-block"
             onError={(e) => {
@@ -85,7 +92,7 @@ export function CustomDateRenderer({
               const span = document.createElement('span');
               span.textContent = char;
               span.style.fontFamily = 'Caveat, cursive';
-              span.style.fontSize = `${height * 1.2}px`;
+              span.style.fontSize = `${scaledHeight * 1.2}px`;
               target.parentNode?.insertBefore(span, target);
             }}
           />
