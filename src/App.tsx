@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import AppModern from './AppModern';
 import AppLawFirm from './AppLawFirm';
+import LarkPreviewPage from './components/LarkPreviewPage';
 
-export default function App() {
+function AppShell() {
   // Persist theme in sessionStorage so it survives page reloads
   const [theme, setTheme] = useState<'modern' | 'lawfirm'>(() => {
     const saved = sessionStorage.getItem('dlgen_theme');
@@ -46,4 +47,17 @@ export default function App() {
       {theme === 'modern' ? <AppModern /> : <AppLawFirm />}
     </div>
   );
+}
+
+export default function App() {
+  const renderMode =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('render')
+      : null;
+
+  if (renderMode === 'lark-preview') {
+    return <LarkPreviewPage />;
+  }
+
+  return <AppShell />;
 }
