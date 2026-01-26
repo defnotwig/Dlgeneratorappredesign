@@ -1,0 +1,22 @@
+{
+  "signature_id": 12,
+  "date_text": "1.26.26",
+  "render_config": "{\"rotation\":-8,\"signatureHeight\":112,\"signatureMarginBottom\":-34,\"dateWrapperWidth\":\"45%\",\"dateWrapperMarginLeft\":\"20.5%\",\"dateWrapperMarginTop\":\"-7px\",\"dateHeight\":22.5,\"dateRotation\":-20,\"dotScale\":0.55}",
+  "week_start": "2026-01-26",
+  "date_labels": [
+    "1.26.26",
+    "1.27.26",
+    "1.28.26",
+    "1.29.26",
+    "1.30.26"
+  ],
+  "hash": "f0475c9a8eb39bbdd4134f88b77c09665db686a7731ada3fa39778af595dd4b1",
+  "generated_at": "2026-01-26T05:17:42.112061+00:00",
+  "files": [
+    "preview_1.png",
+    "preview_2.png",
+    "preview_3.png",
+    "preview_4.png",
+    "preview_5.png"
+  ]
+}
