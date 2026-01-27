@@ -7,19 +7,19 @@ const DEFAULT_API_BASE = 'http://localhost:8000';
 export const previewRenderConfig = {
   rotation: -8,
   signatureHeight: 112,
-  signatureMarginBottom: -38,
+  signatureMarginBottom: -42,
   dateWrapperWidth: '45%',
-  dateWrapperMarginLeft: '18.5%',
-  dateWrapperMarginRight: '2%',
-  dateWrapperMarginTop: '-10px',
+  dateWrapperMarginLeft: '19.5%',
+  dateWrapperMarginRight: '3.5%',
+  dateWrapperMarginTop: '-11px',
   dateHeight: 22.5,
   dateRotation: -20,
   dotScale: 0.55,
   previewPadding: {
     top: 28,
     right: 26,
-    bottom: 32,
-    left: 30,
+    bottom: 40,
+    left: 44,
   },
 };
 

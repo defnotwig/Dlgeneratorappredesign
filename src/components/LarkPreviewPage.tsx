@@ -74,7 +74,7 @@ export default function LarkPreviewPage() {
       <div
         data-lark-preview-target
         data-lark-preview-date={previewLabel}
-        style={{ padding: '28px 26px 32px 30px', display: 'inline-block' }}
+        style={{ padding: '28px 26px 40px 44px', display: 'inline-block' }}
       >
         <div
           className="flex flex-col items-center gap-0"
@@ -84,7 +84,7 @@ export default function LarkPreviewPage() {
             src={signatureParam}
             alt="Active Signature"
             className="h-28 object-contain"
-            style={{ marginBottom: '-38px', height: '112px', objectFit: 'contain' }}
+            style={{ marginBottom: '-42px', height: '112px', objectFit: 'contain' }}
             onError={(e) => {
               (e.target as HTMLImageElement).src =
                 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iODAiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQ2F2ZWF0LGN1cnNpdmUiIGZvbnQtc2l6ZT0iMjRweCI+U2lnbmF0dXJlPC90ZXh0Pjwvc3ZnPg==';
@@ -94,9 +94,9 @@ export default function LarkPreviewPage() {
             className="flex justify-center"
             style={{
               width: '45%',
-              marginLeft: '18.5%',
-              marginRight: '2%',
-              marginTop: '-10px',
+              marginLeft: '19.5%',
+              marginRight: '3.5%',
+              marginTop: '-11px',
             }}
           >
             <CustomDateRenderer date={previewDate} height={22.5} rotation={-20} dotScale={0.55} />
