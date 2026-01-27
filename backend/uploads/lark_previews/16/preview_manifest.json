@@ -1,0 +1,23 @@
+{
+  "signature_id": 16,
+  "date_text": "1.26.26",
+  "render_config": "{\"rotation\":-8,\"signatureHeight\":112,\"signatureMarginBottom\":-42,\"dateWrapperWidth\":\"45%\",\"dateWrapperMarginLeft\":\"19.5%\",\"dateWrapperMarginRight\":\"3.5%\",\"dateWrapperMarginTop\":\"-11px\",\"dateHeight\":22.5,\"dateRotation\":-20,\"dotScale\":0.55,\"previewPadding\":{\"top\":28,\"right\":26,\"bottom\":40,\"left\":44}}",
+  "week_start": "2026-01-26",
+  "date_labels": [
+    "1.26.26",
+    "1.27.26",
+    "1.28.26",
+    "1.29.26",
+    "1.30.26"
+  ],
+  "hash": "45baf6402b26bbd9f005d53fe50fddda31b5b56e8dd05cbaa43da34ac33c7b1d",
+  "path_prefix": "/uploads/lark_previews/16",
+  "generated_at": "2026-01-27T02:04:03.256652+00:00",
+  "files": [
+    "1-26-26/preview.png",
+    "1-27-26/preview.png",
+    "1-28-26/preview.png",
+    "1-29-26/preview.png",
+    "1-30-26/preview.png"
+  ]
+}
