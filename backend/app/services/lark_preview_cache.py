@@ -30,3 +30,17 @@ def set_cached_previews(
         "previews": previews,
         "expires_at": time.time() + ttl_seconds
     }
+
+
+def clear_all_preview_cache() -> None:
+    """Clear all cached previews. Called on startup to ensure fresh images."""
+    global _PREVIEW_CACHE
+    _PREVIEW_CACHE.clear()
+
+
+def clear_signature_cache(signature_id: int) -> None:
+    """Clear cache entries for a specific signature."""
+    global _PREVIEW_CACHE
+    keys_to_remove = [k for k in _PREVIEW_CACHE.keys() if k.startswith(f"{signature_id}:")]
+    for key in keys_to_remove:
+        _PREVIEW_CACHE.pop(key, None)

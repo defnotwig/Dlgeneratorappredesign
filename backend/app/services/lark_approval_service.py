@@ -26,6 +26,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import async_session, LarkBotConfig, SignatureApprovalRequest, SignatureAsset, AuditLog
 from app.services.handwriting_gan import handwriting_gan
 from app.services.lark_preview_cache import get_cached_previews, set_cached_previews
+from app.services.preview_storage import load_latest_preview_set
 
 # Constants
 LARK_BASE_URL = "https://open.larksuite.com/open-apis"
@@ -386,12 +387,61 @@ class LarkMessageCardService:
     async def _build_date_previews(
         self,
         signature_path: Path,
-        monday: datetime
+        monday: datetime,
+        signature_id: Optional[int] = None
     ) -> List[Dict[str, str]]:
         """
         Generate and upload 5 signature+date preview images for Monday-Friday.
+        
+        PRIORITY: Use frontend-captured previews from preview_storage if available.
+        This ensures Lark displays EXACTLY the same images as the frontend preview.
+        Falls back to backend generation with handwriting_gan only if no frontend
+        previews exist.
         """
         previews: List[Dict[str, str]] = []
+        
+        # PRIORITY 1: Use frontend-captured previews if available
+        if signature_id:
+            frontend_previews = load_latest_preview_set(signature_id)
+            if frontend_previews and frontend_previews.get("files"):
+                files_info = frontend_previews.get("files", [])
+                date_labels = frontend_previews.get("date_labels", [])
+                
+                for day_offset, file_info in enumerate(files_info[:5]):
+                    file_path = file_info.get("path") if isinstance(file_info, dict) else None
+                    if not file_path:
+                        continue
+                    
+                    file_path_obj = Path(file_path)
+                    if not file_path_obj.exists():
+                        continue
+                    
+                    # Read the frontend-captured image and upload to Lark
+                    image_bytes = file_path_obj.read_bytes()
+                    upload_result = await self.upload_image_bytes(
+                        image_bytes,
+                        filename=f"signature_date_preview_{day_offset + 1}.png"
+                    )
+                    if not upload_result.get("success"):
+                        continue
+                    
+                    preview_date = monday + timedelta(days=day_offset)
+                    date_label = date_labels[day_offset] if day_offset < len(date_labels) else file_info.get("date_label", "")
+                    
+                    previews.append({
+                        "date_label": date_label,
+                        "day_name": preview_date.strftime("%A"),
+                        "image_key": upload_result.get("image_key", "")
+                    })
+                
+                if len(previews) == 5:
+                    print(f"✅ Using {len(previews)} frontend-captured previews for signature {signature_id}")
+                    return previews
+                else:
+                    print(f"⚠️ Only {len(previews)} frontend previews found, falling back to backend generation")
+                    previews = []  # Reset and fall back
+        
+        # FALLBACK: Generate using backend handwriting_gan
         for day_offset in range(5):
             preview_date = monday + timedelta(days=day_offset)
             composite_result = await handwriting_gan.composite_signature_with_custom_date(
@@ -579,7 +629,7 @@ class LarkMessageCardService:
                 if cached_previews:
                     date_previews = cached_previews
                 else:
-                    date_previews = await self._build_date_previews(signature_path, week_monday)
+                    date_previews = await self._build_date_previews(signature_path, week_monday, signature_id=signature_id)
                     if date_previews:
                         set_cached_previews(signature_id, week_key, date_previews)
             else:
