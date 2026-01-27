@@ -68,7 +68,6 @@ from app.database import (
 )
 from app.utils.timezone import get_ph_now, format_ph_datetime, utc_to_ph
 from app.utils.structured_logger import log_event
-from app.services.handwriting_gan import handwriting_gan
 from app.services.lark_preview_cache import get_cached_previews, set_cached_previews
 from app.services.preview_storage import load_latest_preview_set
 
@@ -286,10 +285,8 @@ class LarkCardUpdateService:
         """
         Generate and upload 5 signature+date preview images for Monday-Friday.
         
-        PRIORITY: Use frontend-captured previews from preview_storage if available.
+        Use frontend-captured previews from preview_storage only.
         This ensures Lark displays EXACTLY the same images as the frontend preview.
-        Falls back to backend generation with handwriting_gan only if no frontend
-        previews exist.
         """
         if not signature_file_path:
             return []
@@ -306,9 +303,19 @@ class LarkCardUpdateService:
             if frontend_previews and frontend_previews.get("files"):
                 files_info = frontend_previews.get("files", [])
                 date_labels = frontend_previews.get("date_labels", [])
+                base_dir = frontend_previews.get("dir_path")
+                if base_dir is not None and not isinstance(base_dir, Path):
+                    base_dir = Path(str(base_dir))
                 
                 for day_offset, file_info in enumerate(files_info[:5]):
-                    file_path = file_info.get("path") if isinstance(file_info, dict) else None
+                    file_path = None
+                    date_label = date_labels[day_offset] if day_offset < len(date_labels) else ""
+                    if isinstance(file_info, dict):
+                        file_path = file_info.get("path")
+                        if file_info.get("date_label"):
+                            date_label = file_info.get("date_label") or date_label
+                    elif isinstance(file_info, str) and base_dir is not None:
+                        file_path = str(base_dir / file_info)
                     if not file_path:
                         continue
                     
@@ -318,9 +325,10 @@ class LarkCardUpdateService:
                     
                     # Read the frontend-captured image and upload to Lark
                     image_bytes = file_path_obj.read_bytes()
+                    safe_label = (date_label or f"day_{day_offset + 1}").replace("/", "-").replace(".", "-")
                     upload_result = await self.upload_image_bytes(
                         image_bytes,
-                        filename=f"signature_date_preview_{day_offset + 1}.png"
+                        filename=f"signature_date_preview_{day_offset + 1}_{safe_label}.png"
                     )
                     if not upload_result.get("success"):
                         log_event(
@@ -332,8 +340,6 @@ class LarkCardUpdateService:
                         continue
                     
                     preview_date = monday + timedelta(days=day_offset)
-                    date_label = date_labels[day_offset] if day_offset < len(date_labels) else file_info.get("date_label", "")
-                    
                     previews.append({
                         "date_label": date_label,
                         "day_name": preview_date.strftime("%A"),
@@ -347,56 +353,13 @@ class LarkCardUpdateService:
                         count=len(previews)
                     )
                     return previews
-                else:
-                    log_event(
-                        "lark_frontend_previews_incomplete",
-                        signature_id=signature_id,
-                        found=len(previews),
-                        expected=5
-                    )
-                    previews = []  # Reset and fall back
-        
-        # FALLBACK: Generate using backend handwriting_gan
-        for day_offset in range(5):
-            preview_date = monday + timedelta(days=day_offset)
-            composite_result = await handwriting_gan.composite_signature_with_custom_date(
-                signature_path=str(signature_path),
-                date=preview_date,
-                output_width=240,
-                output_height=90,
-                format_string="M.D.YY",
-                date_font_height=30
-            )
-            if not composite_result.get("success"):
+
                 log_event(
-                    "lark_preview_generate_failed",
-                    date=preview_date.isoformat(),
-                    error=composite_result.get("error")
+                    "lark_frontend_previews_incomplete",
+                    signature_id=signature_id,
+                    found=len(previews),
+                    expected=5
                 )
-                continue
-
-            upload_result = await self.upload_image_bytes(
-                composite_result.get("image_bytes", b""),
-                filename=f"signature_date_preview_{day_offset + 1}.png"
-            )
-            if not upload_result.get("success"):
-                log_event(
-                    "lark_preview_upload_failed",
-                    date=preview_date.isoformat(),
-                    error=upload_result.get("error"),
-                    lark_code=upload_result.get("code")
-                )
-                continue
-
-            date_label = composite_result.get("date_string")
-            if not date_label:
-                date_label = handwriting_gan._format_custom_date(preview_date, "M.D.YY")
-
-            previews.append({
-                "date_label": date_label,
-                "day_name": preview_date.strftime("%A"),
-                "image_key": upload_result.get("image_key", "")
-            })
 
         return previews
 
@@ -405,22 +368,14 @@ class LarkCardUpdateService:
         date_previews: Optional[List[Dict[str, str]]],
         signature_preview_url: str
     ) -> List[Dict[str, Any]]:
-        elements: List[Dict[str, Any]] = [
-            {"tag": "hr"},
-            {
-                "tag": "div",
-                "text": {
-                    "tag": "lark_md",
-                    "content": "**Handwritten Date Preview (Auto-Generated):**"
-                }
-            }
-        ]
-
-        if date_previews:
-            for row_start in range(0, len(date_previews), 3):
-                row_items = date_previews[row_start:row_start + 3]
+        def _build_preview_grid(previews: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+            rows = [previews[:3], previews[3:5]]
+            elements: List[Dict[str, Any]] = []
+            for row in rows:
+                if not row:
+                    continue
                 columns = []
-                for preview in row_items:
+                for preview in row:
                     columns.append({
                         "tag": "column",
                         "width": "weighted",
@@ -430,7 +385,6 @@ class LarkCardUpdateService:
                             {
                                 "tag": "img",
                                 "img_key": preview.get("image_key", ""),
-                                "scale_type": "fit_horizontal",
                                 "alt": {
                                     "tag": "plain_text",
                                     "content": preview.get("date_label", "Signature and date preview")
@@ -444,6 +398,21 @@ class LarkCardUpdateService:
                     "background_style": "default",
                     "columns": columns
                 })
+            return elements
+
+        elements: List[Dict[str, Any]] = [
+            {"tag": "hr"},
+            {
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": "**Handwritten Date Preview (Auto-Generated):**"
+                }
+            }
+        ]
+
+        if date_previews:
+            elements.extend(_build_preview_grid(date_previews))
         elif signature_preview_url:
             elements.append({
                 "tag": "img",
@@ -1468,11 +1437,12 @@ class LarkCardUpdateService:
                         )
                     )
                 else:
-                    await session.execute(
-                        update(SignatureAsset)
-                        .where(SignatureAsset.id == signature_id)
-                        .values(status=STATUS_REJECTED)
-                    )
+                    if signature.status != STATUS_APPROVED:
+                        await session.execute(
+                            update(SignatureAsset)
+                            .where(SignatureAsset.id == signature_id)
+                            .values(status=STATUS_REJECTED)
+                        )
 
                 audit_log = AuditLog(
                     action="signature_approved_lark" if action == "approve" else "signature_rejected_lark",

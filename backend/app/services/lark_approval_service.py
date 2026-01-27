@@ -8,7 +8,7 @@ Reference: https://open.larksuite.com/document/client-docs/messenger-builder/ove
 Key features:
 - Uses Template Messages with template_id for rich card messages
 - Sends approval request cards to designated users or self
-- Auto-scheduler for Sunday requests with hourly retry
+- Auto-scheduler for Sunday requests at 8:00 AM and 5:00 PM (PHT)
 - Support for self-testing via Send Message API
 """
 
@@ -24,9 +24,10 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import async_session, LarkBotConfig, SignatureApprovalRequest, SignatureAsset, AuditLog
-from app.services.handwriting_gan import handwriting_gan
 from app.services.lark_preview_cache import get_cached_previews, set_cached_previews
 from app.services.preview_storage import load_latest_preview_set
+from app.services.lark_card_update_service import lark_card_update_service
+from app.utils.timezone import get_ph_now, format_ph_datetime
 
 # Constants
 LARK_BASE_URL = "https://open.larksuite.com/open-apis"
@@ -53,6 +54,7 @@ class LarkMessageCardService:
         self.token_expires_at: Optional[datetime] = None
         self._scheduler_running = False
         self._scheduler_task: Optional[asyncio.Task] = None
+        self._slot_window_minutes = 15
     
     # =========================================================================
     # Configuration Management
@@ -393,10 +395,8 @@ class LarkMessageCardService:
         """
         Generate and upload 5 signature+date preview images for Monday-Friday.
         
-        PRIORITY: Use frontend-captured previews from preview_storage if available.
+        Use frontend-captured previews from preview_storage only.
         This ensures Lark displays EXACTLY the same images as the frontend preview.
-        Falls back to backend generation with handwriting_gan only if no frontend
-        previews exist.
         """
         previews: List[Dict[str, str]] = []
         
@@ -406,9 +406,19 @@ class LarkMessageCardService:
             if frontend_previews and frontend_previews.get("files"):
                 files_info = frontend_previews.get("files", [])
                 date_labels = frontend_previews.get("date_labels", [])
+                base_dir = frontend_previews.get("dir_path")
+                if base_dir is not None and not isinstance(base_dir, Path):
+                    base_dir = Path(str(base_dir))
                 
                 for day_offset, file_info in enumerate(files_info[:5]):
-                    file_path = file_info.get("path") if isinstance(file_info, dict) else None
+                    file_path = None
+                    date_label = date_labels[day_offset] if day_offset < len(date_labels) else ""
+                    if isinstance(file_info, dict):
+                        file_path = file_info.get("path")
+                        if file_info.get("date_label"):
+                            date_label = file_info.get("date_label") or date_label
+                    elif isinstance(file_info, str) and base_dir is not None:
+                        file_path = str(base_dir / file_info)
                     if not file_path:
                         continue
                     
@@ -418,16 +428,15 @@ class LarkMessageCardService:
                     
                     # Read the frontend-captured image and upload to Lark
                     image_bytes = file_path_obj.read_bytes()
+                    safe_label = (date_label or f"day_{day_offset + 1}").replace("/", "-").replace(".", "-")
                     upload_result = await self.upload_image_bytes(
                         image_bytes,
-                        filename=f"signature_date_preview_{day_offset + 1}.png"
+                        filename=f"signature_date_preview_{day_offset + 1}_{safe_label}.png"
                     )
                     if not upload_result.get("success"):
                         continue
                     
                     preview_date = monday + timedelta(days=day_offset)
-                    date_label = date_labels[day_offset] if day_offset < len(date_labels) else file_info.get("date_label", "")
-                    
                     previews.append({
                         "date_label": date_label,
                         "day_name": preview_date.strftime("%A"),
@@ -437,40 +446,6 @@ class LarkMessageCardService:
                 if len(previews) == 5:
                     print(f"✅ Using {len(previews)} frontend-captured previews for signature {signature_id}")
                     return previews
-                else:
-                    print(f"⚠️ Only {len(previews)} frontend previews found, falling back to backend generation")
-                    previews = []  # Reset and fall back
-        
-        # FALLBACK: Generate using backend handwriting_gan
-        for day_offset in range(5):
-            preview_date = monday + timedelta(days=day_offset)
-            composite_result = await handwriting_gan.composite_signature_with_custom_date(
-                signature_path=str(signature_path),
-                date=preview_date,
-                output_width=240,
-                output_height=90,
-                format_string="M.D.YY",
-                date_font_height=30
-            )
-            if not composite_result.get("success"):
-                continue
-
-            upload_result = await self.upload_image_bytes(
-                composite_result.get("image_bytes", b""),
-                filename=f"signature_date_preview_{day_offset + 1}.png"
-            )
-            if not upload_result.get("success"):
-                continue
-
-            date_label = composite_result.get("date_string")
-            if not date_label:
-                date_label = handwriting_gan._format_custom_date(preview_date, "M.D.YY")
-
-            previews.append({
-                "date_label": date_label,
-                "day_name": preview_date.strftime("%A"),
-                "image_key": upload_result.get("image_key", "")
-            })
 
         return previews
     
@@ -634,6 +609,12 @@ class LarkMessageCardService:
                         set_cached_previews(signature_id, week_key, date_previews)
             else:
                 print("signature_preview_missing: skipping date previews")
+
+            if len(date_previews) < 5:
+                return {
+                    "success": False,
+                    "error": "No saved preview images found. Generate previews from the UI before sending."
+                }
             
             approval_request = SignatureApprovalRequest(
                 signature_id=signature_id,
@@ -705,7 +686,39 @@ class LarkMessageCardService:
     ) -> Dict[str, Any]:
         """Build a dynamic approval card for when template_id is not set."""
         from app.utils.timezone import get_ph_now, format_ph_datetime
-        
+
+        def _build_preview_grid(previews: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+            rows = [previews[:3], previews[3:5]]
+            elements: List[Dict[str, Any]] = []
+            for row in rows:
+                if not row:
+                    continue
+                columns = []
+                for preview in row:
+                    columns.append({
+                        "tag": "column",
+                        "width": "weighted",
+                        "weight": 1,
+                        "vertical_align": "top",
+                        "elements": [
+                            {
+                                "tag": "img",
+                                "img_key": preview.get("image_key", ""),
+                                "alt": {
+                                    "tag": "plain_text",
+                                    "content": preview.get("date_label", "Signature and date preview")
+                                }
+                            }
+                        ]
+                    })
+                elements.append({
+                    "tag": "column_set",
+                    "flex_mode": "none",
+                    "background_style": "default",
+                    "columns": columns
+                })
+            return elements
+
         ph_now = get_ph_now()
         
         elements = [
@@ -764,7 +777,10 @@ class LarkMessageCardService:
                 "tag": "note",
                 "elements": [{
                     "tag": "plain_text",
-                    "content": "Auto-sent every Sunday. Retries hourly if not approved." if is_auto else "Manual approval request."
+                    "content": (
+                        "Auto-sent every Sunday at 8:00 AM and 5:00 PM (PHT). "
+                        "5:00 PM sends only if still pending or rejected."
+                    ) if is_auto else "Manual approval request."
                 }]
             },
             {"tag": "hr"}
@@ -780,33 +796,7 @@ class LarkMessageCardService:
             }
         ]
         if date_previews:
-            for row_start in range(0, len(date_previews), 3):
-                row_items = date_previews[row_start:row_start + 3]
-                columns = []
-                for preview in row_items:
-                    columns.append({
-                        "tag": "column",
-                        "width": "weighted",
-                        "weight": 1,
-                        "vertical_align": "top",
-                        "elements": [
-                            {
-                                "tag": "img",
-                                "img_key": preview.get("image_key", ""),
-                                "scale_type": "fit_horizontal",
-                                "alt": {
-                                    "tag": "plain_text",
-                                    "content": preview.get("date_label", "Signature and date preview")
-                                }
-                            }
-                        ]
-                    })
-                preview_elements.append({
-                    "tag": "column_set",
-                    "flex_mode": "none",
-                    "background_style": "default",
-                    "columns": columns
-                })
+            preview_elements.extend(_build_preview_grid(date_previews))
         elif signature_preview_key:
             preview_elements.append({
                 "tag": "img",
@@ -950,20 +940,18 @@ class LarkMessageCardService:
         print(" Lark auto-approval scheduler stopped")
     
     async def _scheduler_loop(self):
-        """Main scheduler loop - sends approval requests on Sundays and retries hourly."""
+        """Main scheduler loop - sends approval requests every Sunday at 8:00 AM and 5:00 PM (PH time)."""
         while self._scheduler_running:
             try:
-                now = datetime.now(timezone.utc)
-                
-                # Check if it's Sunday (weekday 6)
-                if now.weekday() == 6:
-                    await self._send_sunday_approval()
-                
-                # Check for pending requests that need hourly retry
-                await self._retry_pending_requests()
-                
-                # Wait 5 minutes before next check
-                await asyncio.sleep(300)
+                now_ph = get_ph_now()
+
+                # Check if it's Sunday (weekday 6) in PH time
+                if now_ph.weekday() == 6:
+                    await self._maybe_send_sunday_slot(now_ph, slot="morning", hour=8, minute=0)
+                    await self._maybe_send_sunday_slot(now_ph, slot="afternoon", hour=17, minute=0)
+
+                # Wait 60 seconds before next check
+                await asyncio.sleep(60)
                 
             except asyncio.CancelledError:
                 print("Scheduler loop cancelled")
@@ -971,6 +959,141 @@ class LarkMessageCardService:
             except Exception as e:
                 print(f"Scheduler error: {e}")
                 await asyncio.sleep(60)
+
+    async def _maybe_send_sunday_slot(
+        self,
+        now_ph: datetime,
+        slot: str,
+        hour: int,
+        minute: int
+    ) -> None:
+        slot_start_ph = now_ph.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        slot_end_ph = slot_start_ph + timedelta(minutes=self._slot_window_minutes)
+
+        if not (slot_start_ph <= now_ph < slot_end_ph):
+            return
+
+        day_start_ph = slot_start_ph.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end_ph = day_start_ph + timedelta(days=1)
+
+        slot_start_utc = slot_start_ph.astimezone(timezone.utc)
+        slot_end_utc = slot_end_ph.astimezone(timezone.utc)
+        day_start_utc = day_start_ph.astimezone(timezone.utc)
+        day_end_utc = day_end_ph.astimezone(timezone.utc)
+
+        async with async_session() as session:
+            # Get the active signature asset
+            result = await session.execute(
+                select(SignatureAsset)
+                .where(SignatureAsset.status.in_(["Approved", "Pending", "Rejected"]))
+                .order_by(SignatureAsset.created_at.desc())
+                .limit(1)
+            )
+            signature = result.scalar_one_or_none()
+
+            if not signature:
+                print("No signature asset found for auto-approval")
+                return
+
+            # Skip if already sent in this slot window
+            sent_result = await session.execute(
+                select(SignatureApprovalRequest.id)
+                .where(SignatureApprovalRequest.signature_id == signature.id)
+                .where(SignatureApprovalRequest.created_at >= slot_start_utc)
+                .where(SignatureApprovalRequest.created_at < slot_end_utc)
+                .limit(1)
+            )
+            if sent_result.scalar_one_or_none():
+                return
+
+            # If afternoon slot, skip when an approval already happened today
+            if slot == "afternoon":
+                approved_result = await session.execute(
+                    select(SignatureApprovalRequest.id)
+                    .where(SignatureApprovalRequest.signature_id == signature.id)
+                    .where(SignatureApprovalRequest.status == "Approved")
+                    .where(SignatureApprovalRequest.responded_at.is_not(None))
+                    .where(SignatureApprovalRequest.responded_at >= day_start_utc)
+                    .where(SignatureApprovalRequest.responded_at < day_end_utc)
+                    .limit(1)
+                )
+                if approved_result.scalar_one_or_none():
+                    return
+
+            # Determine if there were earlier requests today (before this slot)
+            prior_result = await session.execute(
+                select(SignatureApprovalRequest)
+                .where(SignatureApprovalRequest.signature_id == signature.id)
+                .where(SignatureApprovalRequest.created_at >= day_start_utc)
+                .where(SignatureApprovalRequest.created_at < slot_start_utc)
+                .order_by(SignatureApprovalRequest.created_at.desc())
+            )
+            prior_requests = prior_result.scalars().all()
+            has_prior_today = bool(prior_requests)
+
+            # Supersede earlier pending requests when sending the afternoon slot
+            if slot == "afternoon" and prior_requests:
+                await self._supersede_pending_requests(
+                    session=session,
+                    signature=signature,
+                    pending_requests=[req for req in prior_requests if req.status == "Pending"],
+                    superseded_by="Auto-Scheduler"
+                )
+
+        # Send approval request (use retry flag only when there was a prior request today)
+        print(f" Sending automatic Sunday {slot} approval request for signature #{signature.id}")
+        await self.send_approval_request(
+            signature_id=signature.id,
+            requested_by="Auto-Scheduler",
+            is_auto_request=True,
+            is_retry=bool(has_prior_today and slot == "afternoon")
+        )
+
+    async def _supersede_pending_requests(
+        self,
+        session: AsyncSession,
+        signature: SignatureAsset,
+        pending_requests: List[SignatureApprovalRequest],
+        superseded_by: str
+    ) -> None:
+        if not pending_requests:
+            return
+
+        responded_at = datetime.now(timezone.utc)
+        responded_at_display = format_ph_datetime(responded_at, "%B %d, %Y at %I:%M %p PHT")
+
+        for req in pending_requests:
+            await session.execute(
+                update(SignatureApprovalRequest)
+                .where(SignatureApprovalRequest.id == req.id)
+                .where(SignatureApprovalRequest.status == "Pending")
+                .values(
+                    status="Superseded",
+                    responded_by=superseded_by,
+                    responded_at=responded_at
+                )
+            )
+        await session.commit()
+
+        signature_preview_key = signature.lark_image_key or ""
+        for req in pending_requests:
+            if not req.lark_message_id:
+                continue
+            superseded_card = lark_card_update_service.build_superseded_card(
+                signature_id=signature.id,
+                signature_preview_url=signature_preview_key,
+                requested_by=str(req.requested_by) if req.requested_by else "Admin",
+                superseded_by=superseded_by,
+                superseded_at=responded_at_display,
+                validity_period=signature.validity_period or "1 Week",
+                purpose=signature.purpose or "DL Generation",
+                admin_message=signature.admin_message,
+                date_previews=None
+            )
+            await lark_card_update_service.update_message_card(
+                message_id=req.lark_message_id,
+                card_content=superseded_card
+            )
     
     async def _send_sunday_approval(self):
         """Send automatic approval request on Sunday."""
@@ -978,7 +1101,7 @@ class LarkMessageCardService:
             # Get the active signature asset
             result = await session.execute(
                 select(SignatureAsset)
-                .where(SignatureAsset.status.in_(["Approved", "Pending"]))
+                .where(SignatureAsset.status.in_(["Approved", "Pending", "Rejected"]))
                 .order_by(SignatureAsset.created_at.desc())
                 .limit(1)
             )
@@ -1056,17 +1179,26 @@ class LarkMessageCardService:
     
     def get_scheduler_status(self) -> Dict[str, Any]:
         """Get scheduler status."""
-        now = datetime.now(timezone.utc)
-        days_until_sunday = (6 - now.weekday()) % 7
-        if days_until_sunday == 0 and now.hour >= 12:
-            days_until_sunday = 7
-        next_sunday = now + timedelta(days=days_until_sunday)
-        next_sunday = next_sunday.replace(hour=9, minute=0, second=0, microsecond=0)
-        
+        now_ph = get_ph_now()
+        days_until_sunday = (6 - now_ph.weekday()) % 7
+        next_sunday = now_ph + timedelta(days=days_until_sunday)
+        next_sunday_start = next_sunday.replace(hour=8, minute=0, second=0, microsecond=0)
+        next_sunday_evening = next_sunday.replace(hour=17, minute=0, second=0, microsecond=0)
+
+        if days_until_sunday == 0:
+            if now_ph < next_sunday_start:
+                next_run = next_sunday_start
+            elif now_ph < next_sunday_evening:
+                next_run = next_sunday_evening
+            else:
+                next_run = (next_sunday + timedelta(days=7)).replace(hour=8, minute=0, second=0, microsecond=0)
+        else:
+            next_run = next_sunday_start
+
         return {
             "running": self._scheduler_running,
-            "nextSunday": next_sunday.isoformat(),
-            "description": "Auto-sends approval requests every Sunday at 9:00 AM. Retries hourly if rejected or pending."
+            "nextSunday": next_run.isoformat(),
+            "description": "Auto-sends approval requests every Sunday at 8:00 AM and 5:00 PM (PHT). 5:00 PM sends only if still pending or rejected."
         }
     
     async def trigger_manual_approval(self) -> Dict[str, Any]:
