@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { PenTool, Upload, CheckCircle, AlertCircle, Send, Eye, Calendar, X, ChevronLeft, ChevronRight, Clock, RefreshCw, Zap, Settings, Info } from 'lucide-react';
 import { CustomDateRenderer, formatDateNumeric } from './CustomDateRenderer';
-import { formatPhilippinesDateTime, formatPhilippinesDate } from '../utils/timezoneUtils';
+import { formatPhilippinesDateTime, formatPhilippinesDate, getPhilippinesNow } from '../utils/timezoneUtils';
 import { PaginationControl } from './ui/PaginationControl';
 import { savePreviewImages } from '../utils/larkPreviewExport';
 
@@ -179,7 +179,7 @@ export function SignatureConfig() {
     : approvedRequest?.respondedDate;
   const activeSignatureApprovedBy = activeSignatureAsset?.approved_by || approvedRequest?.respondedBy;
   const hasActiveSignature = Boolean(activeSignatureAsset || approvedRequest);
-  const todayLabel = useMemo(() => formatDateNumeric(new Date()), []);
+  const todayLabel = useMemo(() => formatDateNumeric(getPhilippinesNow()), []);
   const previewImage = useMemo(() => (
     previewImages.find(p => p.dateLabel === todayLabel) || previewImages[0]
   ), [previewImages, todayLabel]);
@@ -516,6 +516,7 @@ export function SignatureConfig() {
         return;
       }
       await savePreviewImages({ signatureId, signatureUrl: activeSignatureUrl });
+      await fetchApprovalPreviews(signatureId);
 
       const response = await fetch('http://localhost:8000/api/lark/scheduler/trigger', {
         method: 'POST'
@@ -524,7 +525,6 @@ export function SignatureConfig() {
       console.log('Trigger response:', data);
       
       if (data.success) {
-        alert('Approval request sent.');
         fetchSchedulerStatus();
         // Fetch updated approval requests after sending
         setTimeout(() => fetchApprovalRequests(), 1000);
@@ -598,8 +598,22 @@ export function SignatureConfig() {
       return;
     }
 
+    const validationMessage = [
+      'Please review the signature details before activating:',
+      '',
+      `File: ${signatureFile.name}`,
+      `Validity: ${validityPeriod}`,
+      `Purpose: ${usageOptions.dlGenerator ? 'DL Generation' : 'Other Departments'}`,
+      adminMessage ? 'Admin Message: Provided' : 'Admin Message: None',
+      '',
+      'Continue?'
+    ].join('\n');
+    if (!confirm(validationMessage)) {
+      return;
+    }
+
     const confirmed = confirm(
-      'Set this signature as active?\n\nThis will replace the current active signature.'
+      'Are you sure you want to set this as the active signature?\n\nThis will replace the current active signature.'
     );
     if (!confirmed) {
       return;
@@ -670,8 +684,9 @@ export function SignatureConfig() {
         return;
       }
       await savePreviewImages({ signatureId, signatureUrl: activeSignatureUrl });
+      await fetchApprovalPreviews(signatureId);
 
-      const approvalResponse = await fetch('http://localhost:8000/api/lark/send-approval', {
+      const approvalResponse = await fetch('/api/lark/send-approval', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -687,8 +702,6 @@ export function SignatureConfig() {
       console.log(' Approval request result:', approvalResult);
 
       await fetchApprovalRequests();
-
-      alert('Approval request sent.');
     } catch (error) {
       console.error('Error in handleRequestApproval:', error);
       alert(`Failed to send approval request: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -1263,7 +1276,8 @@ export function SignatureConfig() {
             </div>
             <p className="text-sm text-blue-800 mb-4">
               Automatically sends approval requests to Lark every <strong>Sunday</strong>. 
-              If rejected or no response, retries <strong>every hour</strong> until approved.
+              Sends at <strong>8:00 AM</strong> and <strong>5:00 PM</strong> (PHT). 
+              5:00 PM sends only if still pending or rejected.
             </p>
             
             <div className="grid sm:grid-cols-2 gap-4 mb-4">
