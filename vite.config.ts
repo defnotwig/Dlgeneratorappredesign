@@ -68,10 +68,6 @@
           target: 'http://localhost:8000',
           changeOrigin: true,
         },
-        '/sign': {
-          target: 'http://localhost:8000',
-          changeOrigin: true,
-        },
       },
     },
   });
