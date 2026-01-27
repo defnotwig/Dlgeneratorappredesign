@@ -6,12 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 from pathlib import Path
 
 from app.database import get_db, HandwritingStyle, SignatureAsset
 from app.utils.timezone import get_ph_now, format_ph_datetime
+from app.services.preview_storage import load_latest_preview_set, preview_file_url
 
 router = APIRouter()
 OUTPUT_DIR = Path(__file__).parent.parent.parent / "uploads" / "generated"
@@ -281,5 +282,75 @@ async def check_custom_font_status(request: Request):
         "loaded": font_count > 0,
         "fontCount": font_count,
         "availableChars": list(model.custom_font_renderer.font_images.keys()) if font_count > 0 else []
+    }
+
+
+@router.get("/approval-previews")
+async def approval_previews(signatureId: int):
+    """
+    Return the latest frontend-captured preview images for the given signature.
+    Keeps frontend and Lark previews in sync by using preview_storage as source of truth.
+    """
+    preview_set = load_latest_preview_set(signatureId)
+    if not preview_set:
+        return {"success": True, "signatureId": signatureId, "previews": []}
+
+    file_list = preview_set.get("files") or []
+    date_labels = preview_set.get("date_labels") or []
+    week_start = preview_set.get("week_start")
+    path_prefix = preview_set.get("path_prefix")
+    if not path_prefix:
+        preview_hash = preview_set.get("hash")
+        path_prefix = f"/uploads/lark_previews/{signatureId}/{preview_hash}" if preview_hash else f"/uploads/lark_previews/{signatureId}"
+
+    monday = None
+    if week_start:
+        try:
+            monday = datetime.fromisoformat(week_start)
+        except ValueError:
+            monday = None
+    if monday is None:
+        ph_now = get_ph_now()
+        weekday = ph_now.weekday()
+        if weekday >= 5:
+            days_until_monday = (7 - weekday) % 7
+            monday = ph_now + timedelta(days=days_until_monday)
+        else:
+            monday = ph_now - timedelta(days=weekday)
+
+    previews = []
+    for index, file_entry in enumerate(file_list[:5]):
+        filename = None
+        url = None
+        date_label = date_labels[index] if index < len(date_labels) else preview_set.get("date_text")
+
+        if isinstance(file_entry, dict):
+            filename = file_entry.get("filename")
+            url = file_entry.get("url")
+            if file_entry.get("date_label"):
+                date_label = file_entry.get("date_label")
+        elif isinstance(file_entry, str):
+            filename = file_entry
+
+        if not url and filename:
+            url = preview_file_url(signatureId, filename, path_prefix=path_prefix)
+
+        if not url:
+            continue
+
+        preview_date = monday + timedelta(days=index) if monday else None
+        day_name = preview_date.strftime("%A") if preview_date else ""
+        previews.append({
+            "date_label": date_label,
+            "day_name": day_name,
+            "url": url
+        })
+
+    return {
+        "success": True,
+        "signatureId": signatureId,
+        "previews": previews,
+        "week_start": week_start,
+        "generated_at": preview_set.get("generated_at")
     }
 

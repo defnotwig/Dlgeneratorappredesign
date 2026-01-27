@@ -1,7 +1,8 @@
 """
-Auto-Approval Scheduler Service
-===============================
-Automatically sends approval requests every Sunday and retries hourly if rejected/no response.
+Auto-Approval Scheduler Service (Legacy)
+=======================================
+Automatically sends approval requests every Sunday at 8:00 AM and 5:00 PM (PHT).
+The 5:00 PM send happens only if still pending or rejected.
 """
 
 import asyncio
@@ -15,13 +16,14 @@ from sqlalchemy import select, update
 
 
 class AutoApprovalScheduler:
-    """Service for automatic Sunday approval requests with hourly retry."""
+    """Legacy scheduler helper (not used by main app)."""
 
     def __init__(self):
         self._running = False
         self._task: Optional[asyncio.Task] = None
-        self._retry_interval_hours = 1
-        self._check_interval_minutes = 5
+        self._check_interval_seconds = 60
+        self._slot_window_minutes = 15
+        self._last_sent_slot: dict[str, str] = {}
 
     async def start(self):
         """Start the scheduler."""
@@ -51,64 +53,64 @@ class AutoApprovalScheduler:
 
                 # Check if it's Sunday (weekday 6) in Philippines timezone
                 if ph_now.weekday() == 6:
-                    await self._check_and_send_approval()
-
-                # Also check for pending requests that need retry
-                await self._retry_pending_requests()
+                    await self._check_and_send_approval(ph_now, slot="morning", hour=8, minute=0)
+                    await self._check_and_send_approval(ph_now, slot="afternoon", hour=17, minute=0)
 
                 # Wait before next check
-                await asyncio.sleep(self._check_interval_minutes * 60)
+                await asyncio.sleep(self._check_interval_seconds)
 
             except Exception as e:
                 print(f"[WARN] Scheduler error: {e}")
                 await asyncio.sleep(60)
 
-    async def _check_and_send_approval(self):
-        """Check if approval needs to be sent on Sunday."""
+    async def _check_and_send_approval(self, now_ph: datetime, slot: str, hour: int, minute: int):
+        """Check if approval needs to be sent on Sunday for the given slot."""
+        slot_start = now_ph.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        slot_end = slot_start + timedelta(minutes=self._slot_window_minutes)
+
+        if not (slot_start <= now_ph < slot_end):
+            return
+
+        day_key = slot_start.date().isoformat()
+        slot_key = f"{day_key}:{slot}"
+        if self._last_sent_slot.get(slot_key):
+            return
+
         async with async_session() as db:
             # Get the latest signature that needs approval
             result = await db.execute(
                 select(SignatureAsset)
-                .where(SignatureAsset.status == 'Pending')
+                .where(SignatureAsset.status.in_(["Approved", "Pending", "Rejected"]))
                 .order_by(SignatureAsset.created_at.desc())
                 .limit(1)
             )
             signature = result.scalar_one_or_none()
 
             if signature:
+                if slot == "afternoon":
+                    day_start = slot_start.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(timezone.utc)
+                    day_end = (slot_start.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)).astimezone(timezone.utc)
+                    approved_result = await db.execute(
+                        select(SignatureApprovalRequest.id)
+                        .where(SignatureApprovalRequest.signature_id == signature.id)
+                        .where(SignatureApprovalRequest.status == "Approved")
+                        .where(SignatureApprovalRequest.responded_at.is_not(None))
+                        .where(SignatureApprovalRequest.responded_at >= day_start)
+                        .where(SignatureApprovalRequest.responded_at < day_end)
+                        .limit(1)
+                    )
+                    if approved_result.scalar_one_or_none():
+                        return
+
                 # Send approval request
                 await self._send_approval_request(signature)
-
-    async def _retry_pending_requests(self):
-        """Retry sending approval for requests that are pending or rejected."""
-        async with async_session() as db:
-            # Find pending approval requests that haven't been retried recently
-            one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
-
-            result = await db.execute(
-                select(SignatureApprovalRequest)
-                .where(SignatureApprovalRequest.status == 'Pending')
-                .where(SignatureApprovalRequest.created_at < one_hour_ago)
-            )
-            pending_requests = result.scalars().all()
-
-            for req in pending_requests:
-                # Get the associated signature
-                sig_result = await db.execute(
-                    select(SignatureAsset).where(SignatureAsset.id == req.signature_id)
-                )
-                signature = sig_result.scalar_one_or_none()
-
-                if signature and signature.status != 'Approved':
-                    print(f"[RETRY] Retrying approval request #{req.id}")
-                    await self._send_approval_request(signature, is_retry=True)
+                self._last_sent_slot[slot_key] = now_ph.isoformat()
 
     async def _send_approval_request(self, signature: SignatureAsset, is_retry: bool = False):
         """Send approval request to Lark."""
         try:
             from app.utils.timezone import get_ph_now, format_ph_datetime
             
-            prefix = "[RETRY] " if is_retry else ""
             ph_now = get_ph_now()
             
             result = await lark_bot_service.send_signature_approval_card(
@@ -118,7 +120,7 @@ class AutoApprovalScheduler:
                 requested_date=format_ph_datetime(ph_now, "%A, %B %d, %Y %I:%M %p PHT"),
                 validity_period="1 Week",
                 purpose="DL Generation",
-                admin_message=f"{prefix}Automatic weekly approval request. This request is auto-sent every Sunday and will retry hourly until approved."
+                admin_message="Automatic weekly approval request. This request is auto-sent every Sunday at 8:00 AM and 5:00 PM (PHT)."
             )
             if result.get("success"):
                 print(f"[OK] Approval request sent for signature #{signature.id}")

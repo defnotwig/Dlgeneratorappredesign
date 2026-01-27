@@ -15,6 +15,7 @@ from app.services.preview_storage import (
     preview_file_url,
     save_preview_images,
 )
+from app.services.lark_preview_cache import clear_signature_cache
 
 router = APIRouter()
 
@@ -55,6 +56,7 @@ async def save_previews(
         week_start=week_start,
         images=payloads,
     )
+    clear_signature_cache(signature_id)
     return {"success": True, **response}
 
 

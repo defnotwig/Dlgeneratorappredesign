@@ -8,6 +8,7 @@ from .lark_bot import router as lark_bot
 from .handwriting import router as handwriting
 from .templates import router as templates
 from .dl_generator import router as dl_generator
+from .previews import router as previews
 
 __all__ = [
     "signatures",
@@ -16,5 +17,6 @@ __all__ = [
     "lark_bot",
     "handwriting",
     "templates",
-    "dl_generator"
+    "dl_generator",
+    "previews"
 ]

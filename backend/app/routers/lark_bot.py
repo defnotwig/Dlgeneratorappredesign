@@ -24,6 +24,10 @@ router = APIRouter()
 MSG_NO_PENDING_REQUEST = "No pending approval request found"
 LARK_VERIFICATION_TOKEN = os.getenv("LARK_VERIFICATION_TOKEN")
 
+# In-memory recipient storage (fallback for local dev)
+_RECIPIENTS: list[dict] = []
+_RECIPIENT_COUNTER = 1
+
 
 # =============================================================================
 # Pydantic Models
@@ -55,6 +59,65 @@ class ApprovalResponse(BaseModel):
     status: str  # Approved or Rejected
     respondedBy: Optional[str] = "Attorney"
     reason: Optional[str] = None
+
+
+class RecipientCreate(BaseModel):
+    name: str
+    email: str
+    openId: str
+
+
+@router.get("/recipients")
+async def list_recipients():
+    return _RECIPIENTS
+
+
+@router.get("/recipients/verify-email")
+async def verify_recipient_email(email: str):
+    normalized = (email or "").strip().lower()
+    if not normalized or "@" not in normalized:
+        return {"success": False, "message": "Invalid email"}
+
+    for recipient in _RECIPIENTS:
+        if recipient.get("email") == normalized:
+            return {"success": True, "user": recipient}
+
+    # Provide a predictable stub user for valid emails
+    local_part = normalized.split("@")[0]
+    name = local_part.replace(".", " ").replace("_", " ").title() or "Lark User"
+    return {
+        "success": True,
+        "user": {
+            "name": name,
+            "email": normalized,
+            "open_id": f"open_{normalized.replace('@', '_')}"
+        }
+    }
+
+
+@router.post("/recipients")
+async def add_recipient(payload: RecipientCreate):
+    global _RECIPIENT_COUNTER
+    for recipient in _RECIPIENTS:
+        if recipient.get("open_id") == payload.openId:
+            return {"success": True, "recipient": recipient}
+
+    recipient = {
+        "id": _RECIPIENT_COUNTER,
+        "name": payload.name,
+        "email": payload.email,
+        "open_id": payload.openId
+    }
+    _RECIPIENT_COUNTER += 1
+    _RECIPIENTS.append(recipient)
+    return {"success": True, "recipient": recipient}
+
+
+@router.delete("/recipients/{recipient_id}")
+async def delete_recipient(recipient_id: int):
+    global _RECIPIENTS
+    _RECIPIENTS = [r for r in _RECIPIENTS if r.get("id") != recipient_id]
+    return {"success": True}
 
 
 # =============================================================================
@@ -136,42 +199,7 @@ async def send_approval_request(request_data: ApprovalRequest, db: AsyncSession 
         requested_by=request_data.requestedBy or "Admin",
         is_auto_request=False
     )
-    if openapi_result.get("success"):
-        return openapi_result
-
-    # Fallback to legacy webhook if Open API is not configured.
-    legacy_config = await lark_bot_service.get_active_config()
-    if not legacy_config or not legacy_config.webhook_url:
-        return openapi_result
-
-    existing_request = await db.execute(
-        select(SignatureApprovalRequest)
-        .where(SignatureApprovalRequest.signature_id == request_data.signatureId)
-        .where(SignatureApprovalRequest.status == "Pending")
-        .order_by(SignatureApprovalRequest.created_at.desc())
-        .limit(1)
-    )
-    approval_request = existing_request.scalar_one_or_none()
-    if not approval_request:
-        approval_request = SignatureApprovalRequest(
-            signature_id=request_data.signatureId,
-            status="Pending",
-            created_at=datetime.now(timezone.utc)
-        )
-        db.add(approval_request)
-        await db.commit()
-        await db.refresh(approval_request)
-
-    result = await lark_bot_service.send_signature_approval_card(
-        request_id=approval_request.id,
-        signature_preview_url=f"http://localhost:8000{signature.file_path}",
-        requested_by=request_data.requestedBy,
-        requested_date=str(signature.created_at),
-        validity_period=request_data.validityPeriod,
-        purpose=request_data.purpose,
-        admin_message=request_data.adminMessage
-    )
-    return result
+    return openapi_result
 
 @router.post("/send-text")
 async def send_text_message(message: str):
@@ -291,7 +319,8 @@ async def trigger_approval_manually():
 async def send_auto_approval_request(db: AsyncSession = Depends(get_db)):
     """
     Send an automatic approval request using the stored signature asset.
-    This is what runs every Sunday and retries hourly if not approved.
+    This runs on Sundays at 8:00 AM and 5:00 PM (PHT). The 5:00 PM send
+    happens only if the earlier request is still pending or rejected.
     """
     # Get the latest signature asset
     result = await db.execute(
