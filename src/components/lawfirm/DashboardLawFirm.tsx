@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ProcessModeSelectorLawFirm } from './ProcessModeSelectorLawFirm';
 import { OutputFormatSelectorLawFirm } from './OutputFormatSelectorLawFirm';
 import { ClientSelectorLawFirm } from './ClientSelectorLawFirm';
@@ -6,56 +6,13 @@ import { FileUploaderLawFirm } from './FileUploaderLawFirm';
 import { GenerationSummaryLawFirm } from './GenerationSummaryLawFirm';
 import { Download, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
-interface ActiveSignature {
-  id: number;
-  file_path: string;
-  file_name?: string;
-  status: string;
-  approved_at?: string;
-  validity_period?: string;
-}
-
 export function DashboardLawFirm() {
   const [processMode, setProcessMode] = useState<'dl-only' | 'dl-transmittal' | 'transmittal-only'>('dl-only');
   const [outputFormat, setOutputFormat] = useState<'zip' | 'print'>('zip');
   const [selectedClient, setSelectedClient] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [hasApprovedSignature, setHasApprovedSignature] = useState(false);
-  const [activeSignature, setActiveSignature] = useState<ActiveSignature | null>(null);
-
-  // Fetch actual signature status from backend using the dedicated active signature endpoint
-  useEffect(() => {
-    const checkSignatureStatus = async () => {
-      try {
-        // Use the dedicated endpoint that returns the active (approved) signature
-        const response = await fetch('http://localhost:8000/api/signatures/status/active');
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.status === 'Approved') {
-            setHasApprovedSignature(true);
-            setActiveSignature(data);
-          } else {
-            setHasApprovedSignature(false);
-            setActiveSignature(null);
-          }
-        } else {
-          setHasApprovedSignature(false);
-          setActiveSignature(null);
-        }
-      } catch (err) {
-        console.log('Failed to check signature status:', err);
-        setHasApprovedSignature(false);
-        setActiveSignature(null);
-      }
-    };
-    
-    checkSignatureStatus();
-    // Poll every 3 seconds to catch real-time updates
-    const interval = setInterval(checkSignatureStatus, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
+  const [hasApprovedSignature] = useState(true);
 
   const handleGenerate = () => {
     if (!hasApprovedSignature) {
@@ -74,7 +31,7 @@ export function DashboardLawFirm() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl space-y-6">
       {/* Header */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:p-8">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -144,7 +101,7 @@ export function DashboardLawFirm() {
             <button
               onClick={handleGenerate}
               disabled={isProcessing || !hasApprovedSignature || !uploadedFile || !selectedClient}
-              className="w-full bg-[#1a2332] text-white py-4 rounded-lg font-semibold hover:bg-[#2a3342] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-md"
+              className="w-full bg-emerald-600 text-white py-4 rounded-lg font-semibold hover:bg-emerald-700 hover:shadow-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-md"
             >
               {isProcessing ? (
                 <span className="flex items-center justify-center gap-2">

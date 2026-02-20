@@ -1,11 +1,12 @@
-import { useState, type ComponentType } from 'react';
+import { useState } from 'react';
 import { Menu, X, LogOut, User } from 'lucide-react';
-import logoSPM from '/src/assets/SPM Madrid logo.png?url';
+import { useNavigate } from 'react-router';
+import logoSPM from 'figma:asset/71326ea767111577d27374f8f8da385be3b5fe2c.png';
 
 interface MenuItem {
   id: string;
   label: string;
-  icon: ComponentType<any>;
+  icon: any;
   adminOnly?: boolean;
 }
 
@@ -25,6 +26,11 @@ export function Navigation({
   setUserRole,
 }: NavigationProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/');
+  };
 
   return (
     <>
@@ -93,7 +99,7 @@ export function Navigation({
               </div>
               <div className="flex-1">
                 <p className="font-medium text-sm text-gray-900">
-                  Rivera, Gabriel Ludwig R.
+                  Pangasinan, Francisco G.
                 </p>
                 <p className="text-xs text-gray-500 capitalize">{userRole}</p>
               </div>
@@ -112,7 +118,10 @@ export function Navigation({
               </select>
             </div>
 
-            <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              onClick={handleLogout}
+            >
               <LogOut size={16} />
               <span>Logout</span>
             </button>

@@ -8,18 +8,9 @@ import { Navigation } from './components/Navigation';
 import { FileText, Users, PenTool, FileType, Clock } from 'lucide-react';
 
 export default function AppModern() {
-  // Persist activeView in sessionStorage so it survives page reloads
-  const [activeView, setActiveView] = useState(() => {
-    const saved = sessionStorage.getItem('dlgen_activeView');
-    return saved || 'dashboard';
-  });
+  const [activeView, setActiveView] = useState('dashboard');
   const [isMobile, setIsMobile] = useState(false);
   const [userRole, setUserRole] = useState<'admin' | 'user'>('admin');
-
-  // Persist activeView to sessionStorage when it changes
-  useEffect(() => {
-    sessionStorage.setItem('dlgen_activeView', activeView);
-  }, [activeView]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -29,7 +20,6 @@ export default function AppModern() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
 
   const menuItems = [
     { id: 'dashboard', label: 'DL Generator', icon: FileText },
@@ -55,7 +45,7 @@ export default function AppModern() {
       />
       
       <main className="lg:ml-64 min-h-screen">
-        <div className="p-4 lg:p-8">
+        <div className="pl-10 pr-8 py-4 lg:py-8">
           {activeView === 'dashboard' && <Dashboard />}
           {activeView === 'signature' && userRole === 'admin' && <SignatureConfig />}
           {activeView === 'templates' && userRole === 'admin' && <TemplateManagement />}

@@ -58,16 +58,6 @@
     },
     server: {
       port: 3000,
-      open: false,
-      proxy: {
-        '/api': {
-          target: 'http://localhost:8000',
-          changeOrigin: true,
-        },
-        '/uploads': {
-          target: 'http://localhost:8000',
-          changeOrigin: true,
-        },
-      },
+      open: true,
     },
   });

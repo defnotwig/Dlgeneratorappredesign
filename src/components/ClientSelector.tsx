@@ -99,14 +99,6 @@ export function ClientSelector({ selectedClient, setSelectedClient }: ClientSele
           ))
         )}
       </div>
-
-      {selectedClient && (
-        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-900">
-            Selected: <span className="font-medium">{clients.find(c => c.id === selectedClient)?.name}</span>
-          </p>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,11 +1,12 @@
-import { useState, type ComponentType, type SVGProps } from 'react';
+import { useState } from 'react';
 import { Menu, X, LogOut, User } from 'lucide-react';
-import logoSPM from '/src/assets/SPM Madrid logo.png?url';
+import { useNavigate } from 'react-router';
+import logoSPM from 'figma:asset/71326ea767111577d27374f8f8da385be3b5fe2c.png';
 
 interface MenuItem {
   id: string;
   label: string;
-  icon: ComponentType<any>;
+  icon: any;
   adminOnly?: boolean;
 }
 
@@ -27,6 +28,11 @@ export function NavigationLawFirm({
   isMobile,
 }: NavigationProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/');
+  };
 
   return (
     <>
@@ -95,7 +101,7 @@ export function NavigationLawFirm({
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-sm text-[#003B5C]">
-                  Rivera, Gabriel Ludwig R.
+                  Pangasinan, Francisco G.
                 </p>
                 <p className="text-xs text-gray-600 capitalize">{userRole}</p>
               </div>
@@ -106,7 +112,7 @@ export function NavigationLawFirm({
               <label className="text-xs text-gray-600 block mb-1 font-medium">Demo Role:</label>
               <select
                 value={userRole}
-                onChange={(e) => setUserRole(e.target.value as NavigationProps['userRole'])}
+                onChange={(e) => setUserRole(e.target.value as any)}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37] bg-white text-gray-700"
               >
                 <option value="admin">Admin</option>
@@ -114,7 +120,10 @@ export function NavigationLawFirm({
               </select>
             </div>
 
-            <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              onClick={handleLogout}
+            >
               <LogOut size={16} />
               <span>Logout</span>
             </button>

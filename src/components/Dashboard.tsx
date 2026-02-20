@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ProcessModeSelector } from './ProcessModeSelector';
 import { OutputFormatSelector } from './OutputFormatSelector';
 import { ClientSelector } from './ClientSelector';
@@ -6,56 +6,13 @@ import { FileUploader } from './FileUploader';
 import { GenerationSummary } from './GenerationSummary';
 import { Download, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
-interface ActiveSignature {
-  id: number;
-  file_path: string;
-  file_name?: string;
-  status: string;
-  approved_at?: string;
-  validity_period?: string;
-}
-
 export function Dashboard() {
   const [processMode, setProcessMode] = useState<'dl-only' | 'dl-transmittal' | 'transmittal-only'>('dl-only');
   const [outputFormat, setOutputFormat] = useState<'zip' | 'print'>('zip');
   const [selectedClient, setSelectedClient] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [hasApprovedSignature, setHasApprovedSignature] = useState(false);
-  const [activeSignature, setActiveSignature] = useState<ActiveSignature | null>(null);
-
-  // Fetch actual signature status from backend using the dedicated active signature endpoint
-  useEffect(() => {
-    const checkSignatureStatus = async () => {
-      try {
-        // Use the dedicated endpoint that returns the active (approved) signature
-        const response = await fetch('http://localhost:8000/api/signatures/status/active');
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.status === 'Approved') {
-            setHasApprovedSignature(true);
-            setActiveSignature(data);
-          } else {
-            setHasApprovedSignature(false);
-            setActiveSignature(null);
-          }
-        } else {
-          setHasApprovedSignature(false);
-          setActiveSignature(null);
-        }
-      } catch (err) {
-        console.log('Failed to check signature status:', err);
-        setHasApprovedSignature(false);
-        setActiveSignature(null);
-      }
-    };
-    
-    checkSignatureStatus();
-    // Poll every 3 seconds to catch real-time updates
-    const interval = setInterval(checkSignatureStatus, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
+  const [hasApprovedSignature] = useState(true);
 
   const handleGenerate = () => {
     if (!hasApprovedSignature) {
@@ -74,47 +31,63 @@ export function Dashboard() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="rounded-xl shadow-sm border p-6" style={{ 
+        backgroundColor: 'var(--surface-1)', 
+        borderColor: 'var(--border)',
+        boxShadow: 'var(--shadow-1)'
+      }}>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-500 mt-1">Generate and manage demand letters</p>
+            <h1 style={{ 
+              fontFamily: 'var(--font-display)', 
+              fontSize: '2rem', 
+              fontWeight: 700, 
+              color: 'var(--text-1)',
+              letterSpacing: '-0.02em'
+            }}>DL Generator</h1>
+            <p style={{ color: 'var(--text-2)', marginTop: '4px', fontFamily: 'var(--font-body)' }}>Generate and manage demand letters</p>
           </div>
-          <div className="flex gap-2">
-            <button className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-lg transition-colors">
-              <Download size={16} className="inline mr-2" />
-              Export
-            </button>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{
+            backgroundColor: 'var(--success-soft)',
+            border: '1px solid var(--success)'
+          }}>
+            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--success)' }}></div>
+            <span className="text-sm font-semibold" style={{ color: 'var(--success-hover)', fontFamily: 'var(--font-body)' }}>Online</span>
           </div>
         </div>
       </div>
 
       {/* Signature Asset Status */}
-      <div className={`rounded-xl shadow-sm border p-6 ${
-        hasApprovedSignature 
-          ? 'bg-emerald-50 border-emerald-300' 
-          : 'bg-red-50 border-red-300'
-      }`}>
+      <div className="rounded-xl shadow-sm border p-6" style={{
+        backgroundColor: hasApprovedSignature ? 'var(--success-soft)' : 'var(--warning-soft)',
+        borderColor: hasApprovedSignature ? 'var(--success)' : 'var(--warning)'
+      }}>
         <div className="flex items-start gap-4">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            hasApprovedSignature ? 'bg-emerald-100' : 'bg-red-100'
-          }`}>
+          <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{
+            backgroundColor: hasApprovedSignature ? '#A7F3D0' : '#FDE68A'
+          }}>
             {hasApprovedSignature ? (
-              <CheckCircle className="text-emerald-600" size={24} />
+              <CheckCircle style={{ color: 'var(--success-hover)' }} size={24} />
             ) : (
-              <AlertCircle className="text-red-600" size={24} />
+              <AlertCircle style={{ color: 'var(--warning-hover)' }} size={24} />
             )}
           </div>
           <div className="flex-1">
-            <h3 className={`font-bold text-lg ${hasApprovedSignature ? 'text-emerald-900' : 'text-red-900'}`}>
-              {hasApprovedSignature ? 'Signature Asset Active' : 'No Approved Signature'}
+            <h3 className="font-bold text-lg" style={{ 
+              color: hasApprovedSignature ? '#047857' : '#92400E',
+              fontFamily: 'var(--font-display)'
+            }}>
+              {hasApprovedSignature ? 'Signature Active & Ready' : 'No Active Signature'}
             </h3>
-            <p className={`text-sm mt-1 ${hasApprovedSignature ? 'text-emerald-800' : 'text-red-800'}`}>
+            <p className="text-sm mt-1" style={{ 
+              color: hasApprovedSignature ? '#065F46' : '#78350F',
+              fontFamily: 'var(--font-body)'
+            }}>
               {hasApprovedSignature 
-                ? 'Approved signature will be automatically applied to all generated DLs with handwritten-style date'
-                : 'No approved signature asset available. Please contact admin to configure signature.'
+                ? 'Attorney signature approved and available for automatic application'
+                : 'Please upload a signature and request approval via Signature Config'
               }
             </p>
           </div>
@@ -142,11 +115,36 @@ export function Dashboard() {
           />
 
           {/* Generate Button */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="rounded-xl shadow-sm border p-6" style={{
+            backgroundColor: 'var(--surface-1)',
+            borderColor: 'var(--border)'
+          }}>
             <button
               onClick={handleGenerate}
               disabled={isProcessing || !hasApprovedSignature || !uploadedFile || !selectedClient}
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-all shadow-md"
+              className="w-full py-4 rounded-lg font-semibold transition-all shadow-md"
+              style={{
+                backgroundColor: isProcessing || !hasApprovedSignature || !uploadedFile || !selectedClient ? 'var(--border-strong)' : '#10B981',
+                color: 'var(--text-inverse)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '15px',
+                fontWeight: 600,
+                cursor: isProcessing || !hasApprovedSignature || !uploadedFile || !selectedClient ? 'not-allowed' : 'pointer',
+                boxShadow: 'var(--shadow-1)',
+                transitionDuration: 'var(--motion-fast)'
+              }}
+              onMouseEnter={(e) => {
+                if (!isProcessing && hasApprovedSignature && uploadedFile && selectedClient) {
+                  e.currentTarget.style.backgroundColor = '#059669';
+                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(16, 185, 129, 0.3), 0 4px 6px -2px rgba(16, 185, 129, 0.2)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isProcessing && hasApprovedSignature && uploadedFile && selectedClient) {
+                  e.currentTarget.style.backgroundColor = '#10B981';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-1)';
+                }
+              }}
             >
               {isProcessing ? (
                 <span className="flex items-center justify-center gap-2">
@@ -162,8 +160,14 @@ export function Dashboard() {
             </button>
 
             {!hasApprovedSignature && (
-              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-700 flex items-center gap-2">
+              <div className="mt-3 p-3 rounded-lg" style={{
+                backgroundColor: 'var(--danger-soft)',
+                border: '1px solid var(--danger)'
+              }}>
+                <p className="text-sm flex items-center gap-2" style={{ 
+                  color: '#991B1B',
+                  fontFamily: 'var(--font-body)'
+                }}>
                   <AlertCircle size={16} />
                   Approved signature asset required to proceed
                 </p>

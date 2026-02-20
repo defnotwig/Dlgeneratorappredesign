@@ -1,6 +1,4 @@
-import { useState, useMemo } from 'react';
 import { FileType, Upload, Trash2, Edit, Eye } from 'lucide-react';
-import { PaginationControl } from './ui/PaginationControl';
 
 export function TemplateManagement() {
   const templates = [
@@ -10,18 +8,8 @@ export function TemplateManagement() {
     { id: 4, name: 'EON BANK - Standard DL', type: 'DL', client: 'EON BANK', lastModified: 'Dec 15, 2025' },
   ];
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-
-  // Calculate paginated templates
-  const paginatedTemplates = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return templates.slice(startIndex, startIndex + itemsPerPage);
-  }, [templates, currentPage, itemsPerPage]);
-
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl space-y-6">
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
         <div className="flex items-start justify-between">
@@ -43,7 +31,7 @@ export function TemplateManagement() {
 
       {/* Templates Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paginatedTemplates.map((template) => (
+        {templates.map((template) => (
           <div key={template.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -77,20 +65,6 @@ export function TemplateManagement() {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Pagination Control */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <PaginationControl
-          currentPage={currentPage}
-          totalItems={templates.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={(newSize) => {
-            setItemsPerPage(newSize);
-            setCurrentPage(1);
-          }}
-        />
       </div>
     </div>
   );

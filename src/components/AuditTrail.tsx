@@ -1,6 +1,5 @@
 import { Clock, FileText, User, Filter, Download, Search } from 'lucide-react';
-import { useState, useMemo } from 'react';
-import { PaginationControl } from './ui/PaginationControl';
+import { useState } from 'react';
 
 interface AuditLog {
   id: number;
@@ -14,16 +13,12 @@ interface AuditLog {
 export function AuditTrail() {
   const [filterAction, setFilterAction] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const auditLogs: AuditLog[] = [
     {
       id: 1,
       timestamp: 'Jan 14, 2026 09:45 AM',
-      user: 'Rivera, Gabriel Ludwig R.',
+      user: 'Pangasinan, Francisco G.',
       action: 'DL Generated',
       details: 'Template: Payment Demand | Client: John Doe',
       status: 'success',
@@ -39,7 +34,7 @@ export function AuditTrail() {
     {
       id: 3,
       timestamp: 'Jan 14, 2026 09:15 AM',
-      user: 'Rivera, Gabriel Ludwig R.',
+      user: 'Pangasinan, Francisco G.',
       action: 'Signature Request',
       details: 'Requested signature approval via Lark Bot',
       status: 'warning',
@@ -55,7 +50,7 @@ export function AuditTrail() {
     {
       id: 5,
       timestamp: 'Jan 13, 2026 02:10 PM',
-      user: 'Rivera, Gabriel Ludwig R.',
+      user: 'Pangasinan, Francisco G.',
       action: 'DL Generated',
       details: 'Template: Final Notice | Client: Jane Smith',
       status: 'success',
@@ -68,19 +63,13 @@ export function AuditTrail() {
                           log.details.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
-  
-  // Calculate paginated logs
-  const paginatedLogs = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredLogs.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredLogs, currentPage, itemsPerPage]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl space-y-6">
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center">
+          <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center">
             <Clock className="text-white" size={28} />
           </div>
           <div>
@@ -101,7 +90,7 @@ export function AuditTrail() {
             <select 
               value={filterAction}
               onChange={(e) => setFilterAction(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
             >
               <option value="all">All Actions</option>
               <option value="generated">DL Generated</option>
@@ -121,12 +110,12 @@ export function AuditTrail() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search user or details..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
             />
           </div>
 
           <div className="flex items-end">
-            <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors text-sm flex items-center justify-center gap-2">
+            <button className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors text-sm flex items-center justify-center gap-2">
               <Download size={16} />
               Export Logs
             </button>
@@ -148,15 +137,15 @@ export function AuditTrail() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {paginatedLogs.map((log) => (
+              {filteredLogs.map((log) => (
                 <tr key={log.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                     {log.timestamp}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <User size={16} className="text-purple-600" />
+                      <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                        <User size={16} className="text-emerald-600" />
                       </div>
                       <span className="text-sm text-gray-900">{log.user}</span>
                     </div>
@@ -183,22 +172,6 @@ export function AuditTrail() {
             </tbody>
           </table>
         </div>
-
-        {/* Pagination Control */}
-        {filteredLogs.length > 0 && (
-          <div className="p-4 border-t border-gray-200">
-            <PaginationControl
-              currentPage={currentPage}
-              totalItems={filteredLogs.length}
-              itemsPerPage={itemsPerPage}
-              onPageChange={setCurrentPage}
-              onItemsPerPageChange={(newSize) => {
-                setItemsPerPage(newSize);
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-        )}
 
         {filteredLogs.length === 0 && (
           <div className="p-12 text-center">

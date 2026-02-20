@@ -1,23 +1,18 @@
 import { useState, useMemo } from 'react';
 import { Users, UserPlus, Search, Shield, Trash2, Edit } from 'lucide-react';
-import { PaginationControl } from './ui/PaginationControl';
 
 export function UserManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAccessLevel, setSelectedAccessLevel] = useState('all');
-  
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const users = [
     {
       id: 1,
-      email: 'grivera@spmadridlaw.com',
-      name: 'Rivera, Gabriel Ludwig R.',
+      email: 'pangasinan@demand.com',
+      name: 'Pangasinan, Francisco G.',
       accessLevel: 'Administrator',
       clients: ['BPI', 'EON BANK', 'USB PLC', 'BPI BANKO', 'CITIBANK', 'HSBC'],
-      branch: 'PITX',
+      branch: 'Pangasinan',
       status: 'Active',
     },
     {
@@ -51,12 +46,6 @@ export function UserManagement() {
       return matchesSearch && matchesAccess;
     });
   }, [searchTerm, selectedAccessLevel]);
-  
-  // Calculate paginated users
-  const paginatedUsers = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredUsers.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredUsers, currentPage, itemsPerPage]);
 
   const stats = [
     { label: 'Total Users', value: users.length, color: 'bg-blue-500' },
@@ -65,12 +54,12 @@ export function UserManagement() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl">
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
               <Users className="text-white" size={24} />
             </div>
             <div>
@@ -78,7 +67,7 @@ export function UserManagement() {
               <p className="text-gray-500 mt-1">Manage user access and permissions</p>
             </div>
           </div>
-          <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg font-medium hover:from-emerald-600 hover:to-teal-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
+          <button className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
             <UserPlus size={18} />
             Add New User
           </button>
@@ -164,7 +153,7 @@ export function UserManagement() {
                   </td>
                 </tr>
               ) : (
-                paginatedUsers.map((user) => (
+                filteredUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -224,20 +213,6 @@ export function UserManagement() {
               )}
             </tbody>
           </table>
-        </div>
-        
-        {/* Pagination Control */}
-        <div className="p-4 border-t border-gray-200">
-          <PaginationControl
-            currentPage={currentPage}
-            totalItems={filteredUsers.length}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-            onItemsPerPageChange={(newSize) => {
-              setItemsPerPage(newSize);
-              setCurrentPage(1);
-            }}
-          />
         </div>
       </div>
     </div>
